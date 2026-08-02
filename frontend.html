@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gujarat Technological University - Student Portal</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
+    body {
+      background-color: #f2f2f2;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 20px 10px;
+    }
+
+    .portal-card {
+      background: #ffffff;
+      width: 50;
+      max-width: 410px;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    }
+
+    .header {
+      background-color: #ff7e53;
+      color: #ffffff;
+      text-align: center;
+      padding: 28px 20px;
+    }
+
+    .logo-container {
+      margin-bottom: 12px;
+      display: flex;
+      justify-content: center;
+    }
+
+    /* Embedded SVG for GTU Crest Logo */
+    .gtu-logo {
+      width: 70px;
+      height: 70px;
+    }
+
+    .header h1 {
+      font-size: 19px;
+      font-weight: 500;
+      letter-spacing: 0.6px;
+      line-height: 1.35;
+      text-transform: uppercase;
+    }
+
+    .form-container {
+      padding: 24px 22px;
+    }
+
+    .input-field {
+      width: 100%;
+      padding: 9px 12px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      font-size: 14px;
+      outline: none;
+      color: #333;
+      margin-bottom: 14px;
+    }
+
+    .input-field::placeholder {
+      color: #888;
+    }
+
+    .input-field:focus {
+      border-color: #ff7e53;
+    }
+
+    .captcha-container {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 6px;
+    }
+
+    .captcha-input {
+      flex: 1;
+      margin-bottom: 0;
+    }
+
+    .captcha-display {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .captcha-box {
+      border: 1px solid #d9534f;
+      padding: 5px 16px;
+      background-color: #ffffff;
+      border-radius: 2px;
+    }
+
+    .captcha-text {
+      font-family: 'Georgia', 'Times New Roman', serif;
+      font-style: italic;
+      font-weight: bold;
+      font-size: 18px;
+      letter-spacing: 2px;
+      color: #111;
+      user-select: none;
+    }
+
+    .refresh-icon {
+      color: #337ab7;
+      cursor: pointer;
+      font-size: 16px;
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    .forgot-link {
+      text-align: right;
+      margin-bottom: 18px;
+    }
+
+    .forgot-link a {
+      color: #337ab7;
+      font-size: 13px;
+      text-decoration: none;
+    }
+
+    .btn-submit {
+      width: 100%;
+      background-color: #ff7e53;
+      color: #ffffff;
+      border: none;
+      padding: 10px;
+      border-radius: 4px;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      margin-bottom: 22px;
+    }
+
+    .btn-submit:hover {
+      background-color: #f06a40;
+    }
+
+    .info-content {
+      text-align: center;
+      font-size: 13px;
+      color: #555;
+    }
+
+    .info-bold {
+      font-weight: bold;
+      color: #666;
+      line-height: 1.4;
+      margin-bottom: 16px;
+    }
+
+    .create-acc-link {
+      margin-bottom: 18px;
+    }
+
+    .create-acc-link a {
+      color: #337ab7;
+      text-decoration: none;
+      font-size: 14px;
+    }
+
+    .note-text {
+      font-size: 12px;
+      color: #666;
+      line-height: 1.4;
+      margin-bottom: 14px;
+    }
+
+    .note-text strong {
+      color: #444;
+    }
+
+    .faq-link {
+      margin-bottom: 14px;
+    }
+
+    .faq-link a {
+      color: #800000;
+      font-weight: bold;
+      font-size: 18px;
+      text-decoration: none;
+    }
+
+    .footer-text {
+      font-size: 12px;
+      color: #777;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="portal-card">
+    <div class="header">
+      <div class="logo-container">
+        <!-- GTU Crest SVG Placeholder -->
+        <svg class="gtu-logo" viewBox="0 0 100 100">
+          <circle cx="50" cy="50" r="46" fill="#f2f2f2" stroke="#ffffff" stroke-width="2"/>
+          <circle cx="50" cy="50" r="42" fill="#c02f2f" />
+          <path d="M 50 18 L 80 40 L 80 75 L 50 88 L 20 75 L 20 40 Z" fill="#0d2b5c" stroke="#ffffff" stroke-width="1.5"/>
+          <circle cx="50" cy="50" r="16" fill="#f3a921" />
+          <text x="50" y="53" font-size="9" fill="#ffffff" font-weight="bold" text-anchor="middle">GTU</text>
+        </svg>
+      </div>
+      <h1>GUJARAT TECHNOLOGICAL<br>UNIVERSITY.</h1>
+    </div>
+
+    <div class="form-container">
+      <form onsubmit="event.preventDefault();">
+        <input type="text" class="input-field" placeholder="Enrollment No/Username" required>
+        <input type="password" class="input-field" placeholder="Password" required>
+
+        <div class="captcha-container">
+          <input type="text" class="input-field captcha-input" placeholder="Captcha Code" required>
+          <div class="captcha-display">
+            <div class="captcha-box">
+              <span class="captcha-text">48ee</span>
+            </div>
+            <a href="#" class="refresh-icon" title="Refresh">&#8635;</a>
+          </div>
+        </div>
+
+        <div class="forgot-link">
+          <a href="#">Forgot Password?</a>
+        </div>
+
+        <button type="submit" class="btn-submit">Send OTP to registered Email</button>
+      </form>
+
+      <div class="info-content">
+        <p class="info-bold">
+          For Registered Student: Check your registered email ID for OTP to login to the student portal.
+        </p>
+
+        <p class="create-acc-link">
+          <a href="#">Create an account</a>
+        </p>
+
+        <p class="note-text">
+          <strong>Note :</strong> Students who have already registerd themselves for recheck/reassment can use the same username and password to login to this portal.
+        </p>
+
+        <p class="faq-link">
+          <a href="#">FAQs</a>
+        </p>
+
+        <p class="footer-text">
+          Last Updated on- 02 Aug 2026 - S01
+        </p>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>
