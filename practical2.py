@@ -11,7 +11,7 @@ print("--- Part 2: Model Training Pipeline ---")
 
 # 1. Dataset Load કરવો
 try:
-    df = pd.read_csv(r'C:\Users\DELL\OneDrive\Desktop\gtu_student_data_v3.csv')
+    df = pd.read_csv(gtu_student_data_v3.csv')
     
     # Features (X) અને Target (y)
     X = df[['SPI_trend', 'prev_SPI_avg', 'Mid%']]
