@@ -1,0 +1,26 @@
+{
+  "name": "gtu-result-analysis",
+  "version": "1.0.0",
+  "description": "new version",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vidhyabenraval737-ctrl/gtu-result-analysis.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/vidhyabenraval737-ctrl/gtu-result-analysis/issues"
+  },
+  "homepage": "https://github.com/vidhyabenraval737-ctrl/gtu-result-analysis#readme",
+  "dependencies": {
+    "cors": "^2.8.6",
+    "express": "^5.2.1"
+  }
+}

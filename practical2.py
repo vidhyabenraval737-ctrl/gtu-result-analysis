@@ -1,7 +1,7 @@
 import pandas as pd
 import joblib
 
-from sklearn.model_selection import train_test_split, GridSearchCV
+from sklearn.model_selaction import train_test_split
 from sklearn.preprocessing import StandardScaler
 from sklearn.metrics import classification_report, recall_score
 from imblearn.over_sampling import SMOTE
@@ -11,7 +11,7 @@ print("--- Part 2: Model Training Pipeline ---")
 
 # 1. Dataset Load કરવો
 try:
-    df = pd.read_csv(gtu_student_data_v3.csv')
+    df =pd.read_csv(r"C:\Users\DELL\OneDrive\Documents\GitHub\gtu-result-analysis\gtu_student_results_sample.ods",engine="ods")
     
     # Features (X) અને Target (y)
     X = df[['SPI_trend', 'prev_SPI_avg', 'Mid%']]
@@ -19,8 +19,8 @@ try:
 
     # 2. Train-Test Split (80% Train, 20% Test)
     X_train, X_test, y_train, y_test = train_test_split(
-        X, y, test_size=0.2, random_state=42, stratify=y
-    )
+        X, y, test_size=0.2, random_state=42, stratify=y)
+    
 
     # 3. Scaling
     scaler = StandardScaler()
@@ -56,7 +56,6 @@ try:
 
 except FileNotFoundError:
     print("⚠️ અત્યારે ડેટાસેટ ફાઈલ (gtu_student_data.csv) મળી નથી.")
-
 
 
 
