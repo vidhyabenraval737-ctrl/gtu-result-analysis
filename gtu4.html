@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GTU Student Portal - Re-checking & Re-assessment</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --gtu-navy: #002147;
+            --gtu-gold: #d4af37;
+        }
+        .bg-gtu-navy { background-color: var(--gtu-navy); }
+        .text-gtu-navy { color: var(--gtu-navy); }
+        .border-gtu-navy { border-color: var(--gtu-navy); }
+    </style>
+</head>
+<body class="bg-slate-100 font-sans text-slate-800 antialiased min-h-screen flex flex-col">
+
+    <!-- Top GTU Header -->
+    <header class="bg-gtu-navy text-white shadow-md border-b-2 border-amber-400">
+        <div class="max-w-7xl mx-auto px-4 py-2.5 flex justify-between items-center">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 bg-white rounded-full flex items-center justify-center text-gtu-navy font-bold text-lg border-2 border-amber-400">
+                    GTU
+                </div>
+                <div>
+                    <h1 class="text-base font-bold tracking-wide">Gujarat Technological University</h1>
+                    <p class="text-[11px] text-amber-300">Online Re-checking & Re-assessment Application</p>
+                </div>
+            </div>
+            <div class="text-right text-xs">
+                <p class="font-bold text-white">DEV PATEL</p>
+                <p class="text-slate-300">En. No: <span class="font-mono text-amber-300">210280107001</span></p>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Container -->
+    <main class="max-w-7xl mx-auto w-full flex-1 p-4 md:p-6">
+
+        <!-- Application Form Card -->
+        <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-4 md:p-6 mb-6">
+            
+            <!-- Header & Exam Term Selector -->
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center border-b pb-4 mb-5 gap-4">
+                <div>
+                    <h2 class="text-lg font-bold text-gtu-navy flex items-center gap-2">
+                        <i class="fas fa-search-plus text-amber-500"></i> Apply for Answer-book Re-checking / Re-assessment
+                    </h2>
+                    <p class="text-xs text-slate-500 mt-0.5">Select subjects and service type for official GTU answer-sheet evaluation.</p>
+                </div>
+
+                <div class="flex items-center space-x-2">
+                    <label class="text-xs font-semibold text-slate-600">Exam Term:</label>
+                    <select id="examTerm" onchange="resetSelection()" class="border border-slate-300 rounded-lg px-3 py-1.5 text-xs font-bold text-gtu-navy bg-slate-50 focus:ring-2 focus:ring-blue-600 focus:outline-none">
+                        <option value="winter2025">Winter 2025 (Regular/Remedial)</option>
+                        <option value="summer2025">Summer 2025</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Difference Explanation Banner -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6 text-xs">
+                <div class="bg-blue-50 border border-blue-200 p-3.5 rounded-lg">
+                    <span class="font-bold text-gtu-navy block mb-1">
+                        <i class="fas fa-calculator text-blue-600 mr-1"></i> Option A: Re-checking (₹100 / subject)
+                    </span>
+                    <p class="text-slate-600">Totaling verification only. Evaluator checks for un-evaluated questions or totaling errors in the original mark sheet.</p>
+                </div>
+                <div class="bg-amber-50 border border-amber-200 p-3.5 rounded-lg">
+                    <span class="font-bold text-amber-900 block mb-1">
+                        <i class="fas fa-file-signature text-amber-600 mr-1"></i> Option B: Re-assessment (₹250 / subject)
+                    </span>
+                    <p class="text-amber-900">Complete re-evaluation by an independent examiner. Grade updates only if mark difference is <span class="font-bold">≥ 15% of total marks</span>.</p>
+                </div>
+            </div>
+
+            <!-- Subject Selection Table -->
+            <div class="overflow-x-auto rounded-lg border border-slate-200 mb-6">
+                <table class="w-full text-left text-xs md:text-sm">
+                    <thead class="bg-slate-100 text-slate-700 uppercase font-bold text-[11px] border-b">
+                        <tr>
+                            <th class="p-3 w-12 text-center">Select</th>
+                            <th class="p-3">Subject Code</th>
+                            <th class="p-3">Subject Name</th>
+                            <th class="p-3 text-center">Grade Obtained</th>
+                            <th class="p-3 text-center">Service Type</th>
+                            <th class="p-3 text-right">Fee (₹)</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-200 font-medium">
+                        <!-- Subject Row 1 -->
+                        <tr class="hover:bg-slate-50">
+                            <td class="p-3 text-center">
+                                <input type="checkbox" id="sub1" onchange="calculateFee()" class="sub-checkbox w-4 h-4 text-gtu-navy rounded border-slate-300 focus:ring-blue-500">
+                            </td>
+                            <td class="p-3 font-mono text-xs font-bold text-slate-600">3160704</td>
+                            <td class="p-3 text-slate-800">Web Programming</td>
+                            <td class="p-3 text-center"><span class="bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded font-bold text-xs">AB</span></td>
+                            <td class="p-3 text-center">
+                                <select id="type1" onchange="calculateFee()" class="border border-slate-300 rounded px-2 py-1 text-xs font-semibold focus:ring-2 focus:ring-blue-600">
+                                    <option value="250">Re-assessment (₹250)</option>
+                                    <option value="100">Re-checking (₹100)</option>
+                                </select>
+                            </td>
+                            <td class="p-3 text-right font-bold text-slate-700" id="fee1">₹0</td>
+                        </tr>
+
+                        <!-- Subject Row 2 -->
+                        <tr class="hover:bg-slate-50">
+                            <td class="p-3 text-center">
+                                <input type="checkbox" id="sub2" onchange="calculateFee()" class="sub-checkbox w-4 h-4 text-gtu-navy rounded border-slate-300 focus:ring-blue-500">
+                            </td>
+                            <td class="p-3 font-mono text-xs font-bold text-slate-600">3160713</td>
+                            <td class="p-3 text-slate-800">Machine Learning Concepts</td>
+                            <td class="p-3 text-center"><span class="bg-amber-100 text-amber-800 px-2 py-0.5 rounded font-bold text-xs">FF</span></td>
+                            <td class="p-3 text-center">
+                                <select id="type2" onchange="calculateFee()" class="border border-slate-300 rounded px-2 py-1 text-xs font-semibold focus:ring-2 focus:ring-blue-600">
+                                    <option value="250">Re-assessment (₹250)</option>
+                                    <option value="100">Re-checking (₹100)</option>
+                                </select>
+                            </td>
+                            <td class="p-3 text-right font-bold text-slate-700" id="fee2">₹0</td>
+                        </tr>
+
+                        <!-- Subject Row 3 -->
+                        <tr class="hover:bg-slate-50">
+                            <td class="p-3 text-center">
+                                <input type="checkbox" id="sub3" onchange="calculateFee()" class="sub-checkbox w-4 h-4 text-gtu-navy rounded border-slate-300 focus:ring-blue-500">
+                            </td>
+                            <td class="p-3 font-mono text-xs font-bold text-slate-600">3160712</td>
+                            <td class="p-3 text-slate-800">Software Engineering</td>
+                            <td class="p-3 text-center"><span class="bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded font-bold text-xs">BC</span></td>
+                            <td class="p-3 text-center">
+                                <select id="type3" onchange="calculateFee()" class="border border-slate-300 rounded px-2 py-1 text-xs font-semibold focus:ring-2 focus:ring-blue-600">
+                                    <option value="250">Re-assessment (₹250)</option>
+                                    <option value="100">Re-checking (₹100)</option>
+                                </select>
+                            </td>
+                            <td class="p-3 text-right font-bold text-slate-700" id="fee3">₹0</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Fee Summary & Declaration -->
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center bg-slate-50 p-4 rounded-xl border border-slate-200 gap-4 mb-6">
+                <div class="text-xs text-slate-600">
+                    <p class="font-bold text-slate-800 mb-0.5">Maximum subjects allowed for Re-assessment: 3</p>
+                    <p>Last Date of Application: <span class="font-bold text-red-600 font-mono">15-AUG-2026</span></p>
+                </div>
+                <div class="text-right w-full sm:w-auto border-t sm:border-t-0 pt-3 sm:pt-0 border-slate-200">
+                    <p class="text-xs text-slate-500 font-semibold uppercase">Total Payable Amount</p>
+                    <p id="totalAmount" class="text-2xl font-black text-gtu-navy">₹0</p>
+                </div>
+            </div>
+
+            <!-- Declaration Checkbox & Submit Button -->
+            <div class="space-y-4">
+                <label class="flex items-start space-x-2 text-xs text-slate-600 cursor-pointer">
+                    <input type="checkbox" id="declaration" class="mt-0.5 rounded border-slate-300 text-gtu-navy focus:ring-blue-500">
+                    <span>I declare that I have read all GTU re-assessment rules. I accept that the revised marks awarded after evaluation will be final and binding, even if they are lower than original marks.</span>
+                </label>
+
+                <div class="flex justify-end space-x-3">
+                    <button onclick="resetSelection()" class="px-4 py-2 text-xs font-bold text-slate-600 hover:bg-slate-100 rounded-lg transition border border-slate-300">
+                        Reset Selection
+                    </button>
+                    <button onclick="submitApplication()" class="px-5 py-2 text-xs font-bold text-white bg-gtu-navy hover:bg-slate-900 rounded-lg shadow transition flex items-center gap-1.5">
+                        <i class="fas fa-credit-card text-amber-400"></i> Proceed to Online Payment
+                    </button>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Confirmation & Challan Modal -->
+    <div id="receiptModal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+        <div class="bg-white rounded-xl shadow-xl max-w-lg w-full p-6 border border-slate-200">
+            <div class="text-center border-b pb-4 mb-4">
+                <div class="w-12 h-12 bg-emerald-100 text-emerald-700 rounded-full flex items-center justify-center mx-auto mb-2 text-xl font-bold">
+                    <i class="fas fa-check"></i>
+                </div>
+                <h3 class="text-lg font-bold text-gtu-navy">GTU Application Submitted</h3>
+                <p class="text-xs text-slate-500">Application Reference No: <span class="font-mono font-bold text-amber-600">GTU/RE/2026/8401</span></p>
+            </div>
+
+            <div class="space-y-2 text-xs text-slate-700 mb-6 bg-slate-50 p-4 rounded-lg border font-mono">
+                <div class="flex justify-between"><span>Enrollment No:</span><span class="font-bold">210280107001</span></div>
+                <div class="flex justify-between"><span>Student Name:</span><span class="font-bold">PATEL DEV K.</span></div>
+                <div class="flex justify-between"><span>Payment Status:</span><span class="text-emerald-700 font-bold">SUCCESSFUL</span></div>
+                <div class="flex justify-between border-t pt-2 mt-2">
+                    <span>Total Fee Paid:</span>
+                    <span id="paidAmount" class="font-bold text-gtu-navy text-sm">₹0</span>
+                </div>
+            </div>
+
+            <div class="flex space-x-2">
+                <button onclick="window.print()" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-2 rounded-lg text-xs transition">
+                    <i class="fas fa-print mr-1"></i> Print Challan
+                </button>
+                <button onclick="closeModal()" class="flex-1 bg-gtu-navy hover:bg-slate-900 text-white font-bold py-2 rounded-lg text-xs transition">
+                    Close Portal
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript Calculation & Validation -->
+    <script>
+        function calculateFee() {
+            let total = 0;
+            
+            for (let i = 1; i <= 3; i++) {
+                const isChecked = document.getElementById(sub${i}).checked;
+                const typeVal = parseInt(document.getElementById(type${i}).value);
+                const feeCell = document.getElementById(fee${i});
+
+                if (isChecked) {
+                    total += typeVal;
+                    feeCell.innerText = ₹${typeVal};
+                } else {
+                    feeCell.innerText = ₹0;
+                }
+            }
+
+            document.getElementById('totalAmount').innerText = ₹${total};
+        }
+
+        function resetSelection() {
+            for (let i = 1; i <= 3; i++) {
+                document.getElementById(sub${i}).checked = false;
+                document.getElementById(fee${i}).innerText = ₹0;
+            }
+            document.getElementById('declaration').checked = false;
+            document.getElementById('totalAmount').innerText = ₹0;
+        }
+
+        function submitApplication() {
+            let selectedCount = 0;
+            for (let i = 1; i <= 3; i++) {
+                if (document.getElementById(sub${i}).checked) selectedCount++;
+            }
+
+            if (selectedCount === 0) {
+                alert("Please select at least one subject to apply for Re-checking or Re-assessment.");
+                return;
+            }
+
+            if (!document.getElementById('declaration').checked) {
+                alert("Please accept the GTU re-assessment rules declaration before proceeding.");
+                return;
+            }
+
+            const total = document.getElementById('totalAmount').innerText;
+            document.getElementById('paidAmount').innerText = total;
+            document.getElementById('receiptModal').classList.remove('hidden');
+        }
+
+        function closeModal() {
+            document.getElementById('receiptModal').classList.add('hidden');
+            resetSelection();
+        }
+    </script>
+</body>
+</html>
