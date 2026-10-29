@@ -1,0 +1,1027 @@
+<!DOCTYPE html>
+<html lang="en" class="dark scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EduPulse | GTU SPI, Mid-Sem & Risk Predictor</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#eef2ff',
+                            100: '#e0e7ff',
+                            500: '#6366f1',
+                            600: '#4f46e5',
+                            700: '#4338ca',
+                            900: '#312e81',
+                        },
+                        accent: {
+                            cyan: '#06b6d4',
+                            emerald: '#10b981',
+                            amber: '#f59e0b',
+                            rose: '#f43f5e',
+                            violet: '#8b5cf6'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Google Fonts & FontAwesome -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(12px);
+        }
+        .dark .glass-panel {
+            background: rgba(15, 23, 42, 0.85);
+            backdrop-filter: blur(12px);
+        }
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(156, 163, 175, 0.4); border-radius: 9999px; }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(156, 163, 175, 0.6); }
+    </style>
+</head>
+<body class="bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-100 min-h-screen flex flex-col transition-colors duration-300">
+
+    <!-- Header Navigation -->
+    <header class="sticky top-0 z-40 w-full glass-panel border-b border-slate-200 dark:border-slate-800/80 transition-colors">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <!-- Logo -->
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-600 via-accent-violet to-accent-cyan flex items-center justify-center text-white shadow-lg shadow-brand-500/25">
+                    <i class="fas fa-graduation-cap text-lg"></i>
+                </div>
+                <div>
+                    <div class="flex items-center space-x-2">
+                        <span class="font-extrabold text-lg tracking-tight bg-gradient-to-r from-brand-600 via-accent-violet to-accent-cyan bg-clip-text text-transparent">EduPulse GTU</span>
+                        <span class="text-[10px] uppercase tracking-wider font-semibold px-2 py-0.5 rounded-full bg-brand-100 dark:bg-brand-900/60 text-brand-700 dark:text-brand-300">GTU v3.0</span>
+                    </div>
+                    <p class="text-xs text-slate-500 dark:text-slate-400">Academic Analytics & Risk Engine</p>
+                </div>
+            </div>
+
+            <!-- Header Right Controls -->
+            <div class="flex items-center space-x-3">
+                <!-- Preset Loader Quick Button -->
+                <button onclick="loadGtuPreset()" title="Load GTU Computer Eng. Preset" class="hidden sm:flex items-center space-x-2 px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 transition">
+                    <i class="fas fa-magic text-accent-cyan"></i>
+                    <span>Load GTU Preset</span>
+                </button>
+
+                <!-- Theme Toggle -->
+                <button id="theme-toggle" class="p-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition">
+                    <i id="theme-icon" class="fas fa-moon text-sm"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex-1 w-full">
+
+        <!-- Navigation Tabs -->
+        <div class="flex flex-wrap gap-2 mb-6 p-1.5 bg-slate-200/70 dark:bg-slate-900 rounded-2xl border border-slate-300/50 dark:border-slate-800">
+            <button id="tab-btn-spi" onclick="switchTab('spi')" class="tab-btn flex-1 min-w-[120px] py-2.5 px-4 rounded-xl text-xs sm:text-sm font-semibold transition-all duration-200 flex items-center justify-center space-x-2 bg-white dark:bg-slate-800 text-brand-600 dark:text-white shadow-sm">
+                <i class="fas fa-calculator text-brand-500"></i>
+                <span>1. SPI Calculator</span>
+            </button>
+            <button id="tab-btn-mid" onclick="switchTab('mid')" class="tab-btn flex-1 min-w-[120px] py-2.5 px-4 rounded-xl text-xs sm:text-sm font-semibold transition-all duration-200 flex items-center justify-center space-x-2 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white">
+                <i class="fas fa-bullseye text-accent-cyan"></i>
+                <span>2. Mid-Sem & ESE Target</span>
+            </button>
+            <button id="tab-btn-risk" onclick="switchTab('risk')" class="tab-btn flex-1 min-w-[120px] py-2.5 px-4 rounded-xl text-xs sm:text-sm font-semibold transition-all duration-200 flex items-center justify-center space-x-2 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white">
+                <i class="fas fa-shield-halved text-accent-rose"></i>
+                <span>3. Risk Predictor</span>
+            </button>
+            <button id="tab-btn-analytics" onclick="switchTab('analytics')" class="tab-btn flex-1 min-w-[120px] py-2.5 px-4 rounded-xl text-xs sm:text-sm font-semibold transition-all duration-200 flex items-center justify-center space-x-2 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white">
+                <i class="fas fa-chart-line text-accent-violet"></i>
+                <span>4. Performance Analytics</span>
+            </button>
+        </div>
+
+        <!-- ========================================================================= -->
+        <!-- TAB 1: SPI CALCULATOR -->
+        <!-- ========================================================================= -->
+        <div id="tab-content-spi" class="tab-content space-y-6">
+            <!-- Top Controls & Summary Banner -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- SPI Score Hero Card -->
+                <div class="lg:col-span-1 bg-gradient-to-br from-brand-600 via-brand-700 to-accent-violet rounded-3xl p-6 text-white shadow-xl shadow-brand-500/20 relative overflow-hidden flex flex-col justify-between">
+                    <div class="absolute -right-6 -top-6 w-32 h-32 bg-white/10 rounded-full blur-2xl pointer-events-none"></div>
+                    <div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs uppercase tracking-wider font-semibold opacity-80">Calculated SPI</span>
+                            <span id="spi-status-badge" class="px-2.5 py-1 rounded-full text-xs font-bold bg-white/20 backdrop-blur-sm">Ready</span>
+                        </div>
+                        <div class="mt-4 flex items-baseline space-x-2">
+                            <span id="spi-result" class="text-5xl font-extrabold tracking-tight font-mono">0.00</span>
+                            <span class="text-lg opacity-80">/ 10.0</span>
+                        </div>
+                        <p id="spi-grade-desc" class="text-xs text-brand-100 mt-2">Enter your course grades to view instant SPI.</p>
+                    </div>
+
+                    <!-- Summary Stats -->
+                    <div class="mt-6 pt-4 border-t border-white/15 grid grid-cols-2 gap-4 text-xs">
+                        <div>
+                            <span class="opacity-70 block">Total Credits</span>
+                            <span id="total-credits-display" class="font-bold text-base font-mono">0</span>
+                        </div>
+                        <div>
+                            <span class="opacity-70 block">Total Points</span>
+                            <span id="total-points-display" class="font-bold text-base font-mono">0</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Goal Setting & Target SPI Calculator -->
+                <div class="lg:col-span-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 shadow-sm flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center justify-between mb-3">
+                            <h3 class="font-bold text-base flex items-center space-x-2">
+                                <i class="fas fa-crosshair text-brand-500"></i>
+                                <span>SPI Goal Advisor</span>
+                            </h3>
+                            <button onclick="loadGtuPreset()" class="sm:hidden text-xs text-brand-600 font-semibold">Load Preset</button>
+                        </div>
+                        <p class="text-xs text-slate-500 dark:text-slate-400 mb-4">Set your target SPI for this semester to calculate the average grade point required in your remaining unassigned courses.</p>
+                        
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs font-semibold mb-1 text-slate-600 dark:text-slate-400">Target Semester SPI</label>
+                                <div class="relative">
+                                    <input type="number" id="target-spi-input" min="0" max="10" step="0.01" value="8.00" oninput="calculateTargetSPIGoal()" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl px-3 py-2 text-sm font-mono focus:ring-2 focus:ring-brand-500 outline-none">
+                                </div>
+                            </div>
+                            <div class="bg-slate-50 dark:bg-slate-800/60 rounded-xl p-3 border border-slate-200 dark:border-slate-700 flex flex-col justify-center">
+                                <span class="text-xs text-slate-500 dark:text-slate-400">Required Remaining Avg Point</span>
+                                <span id="target-required-point" class="text-lg font-bold font-mono text-brand-600 dark:text-brand-400">N/A</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- GTU Grading Reference Quick Strip -->
+                    <div class="mt-4 pt-3 border-t border-slate-100 dark:border-slate-800 flex flex-wrap gap-2 text-[11px] text-slate-500">
+                        <span class="font-semibold text-slate-700 dark:text-slate-300">GTU Scale:</span>
+                        <span class="px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-800">AA = 10</span>
+                        <span class="px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-800">AB = 9</span>
+                        <span class="px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-800">BB = 8</span>
+                        <span class="px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-800">BC = 7</span>
+                        <span class="px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-800">CC = 6</span>
+                        <span class="px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-800">CD = 5</span>
+                        <span class="px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-800">DD = 4</span>
+                        <span class="px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-rose-500">FF = 0</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Subjects Dynamic Table -->
+            <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-5 shadow-sm">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
+                    <div>
+                        <h3 class="font-bold text-base">Subject & Course Grade Entry</h3>
+                        <p class="text-xs text-slate-500 dark:text-slate-400">Add course name, credit weightage, and received GTU letter grade.</p>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <button onclick="addSubjectRow()" class="px-3.5 py-2 rounded-xl text-xs font-semibold bg-brand-600 hover:bg-brand-700 text-white transition flex items-center space-x-1.5 shadow-sm">
+                            <i class="fas fa-plus"></i>
+                            <span>Add Subject</span>
+                        </button>
+                        <button onclick="resetSpiTable()" class="px-3 py-2 rounded-xl text-xs font-medium bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 transition">
+                            <i class="fas fa-rotate-right"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Table -->
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-sm">
+                        <thead>
+                            <tr class="border-b border-slate-200 dark:border-slate-800 text-xs text-slate-500 uppercase tracking-wider">
+                                <th class="pb-3 px-2">Subject / Course Name</th>
+                                <th class="pb-3 px-2 w-28">Credits</th>
+                                <th class="pb-3 px-2 w-36">Grade</th>
+                                <th class="pb-3 px-2 w-28 text-right">Grade Point</th>
+                                <th class="pb-3 px-2 w-28 text-right">Credit x Point</th>
+                                <th class="pb-3 px-2 w-16 text-center">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="spi-tbody" class="divide-y divide-slate-100 dark:divide-slate-800/50">
+                            <!-- Rows injected dynamically via JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========================================================================= -->
+        <!-- TAB 2: MID-SEM & INTERNAL MARKS CALCULATOR -->
+        <!-- ========================================================================= -->
+        <div id="tab-content-mid" class="tab-content hidden space-y-6">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                <!-- Left Input Panel -->
+                <div class="lg:col-span-7 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 shadow-sm space-y-5">
+                    <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
+                        <div>
+                            <h3 class="font-bold text-base">Internal Components & Mid-Sem Marks</h3>
+                            <p class="text-xs text-slate-500 dark:text-slate-400">Configure GTU exam components to predict required End-Sem (ESE) marks.</p>
+                        </div>
+                        <!-- Pattern Preset Dropdown -->
+                        <select id="mid-preset-select" onchange="applyEvaluationPatternPreset()" class="text-xs bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl px-2.5 py-1.5 focus:outline-none">
+                            <option value="gtu-standard">GTU Standard (70 ESE + 30 Mid + 50 Pr/Int)</option>
+                            <option value="gtu-theory-only">GTU Theory Only (70 ESE + 30 Mid)</option>
+                            <option value="50-50">50-50 Assessment Pattern</option>
+                        </select>
+                    </div>
+
+                    <!-- Component Forms -->
+                    <div class="space-y-4 text-xs">
+                        <!-- Mid-Sem Exam -->
+                        <div class="p-3.5 bg-slate-50 dark:bg-slate-800/50 rounded-2xl border border-slate-200/80 dark:border-slate-700/80 grid grid-cols-1 sm:grid-cols-3 gap-3 items-center">
+                            <div>
+                                <span class="font-semibold block text-slate-700 dark:text-slate-200">Mid-Sem Exam</span>
+                                <span class="text-[10px] text-slate-400">Theory Test Component</span>
+                            </div>
+                            <div>
+                                <label class="block text-[10px] text-slate-400 mb-1">Marks Obtained</label>
+                                <input type="number" id="mid-obtained" value="21" min="0" max="30" oninput="calculateMidSemRequirements()" class="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg px-2.5 py-1.5 font-mono text-xs focus:ring-2 focus:ring-brand-500 outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] text-slate-400 mb-1">Total Max Marks</label>
+                                <input type="number" id="mid-total" value="30" min="1" oninput="calculateMidSemRequirements()" class="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg px-2.5 py-1.5 font-mono text-xs focus:ring-2 focus:ring-brand-500 outline-none">
+                            </div>
+                        </div>
+
+                        <!-- Internal / Continuous Assessment -->
+                        <div class="p-3.5 bg-slate-50 dark:bg-slate-800/50 rounded-2xl border border-slate-200/80 dark:border-slate-700/80 grid grid-cols-1 sm:grid-cols-3 gap-3 items-center">
+                            <div>
+                                <span class="font-semibold block text-slate-700 dark:text-slate-200">Internal / Quiz / Assgn</span>
+                                <span class="text-[10px] text-slate-400">Continuous Evaluation</span>
+                            </div>
+                            <div>
+                                <label class="block text-[10px] text-slate-400 mb-1">Marks Obtained</label>
+                                <input type="number" id="internal-obtained" value="16" min="0" max="20" oninput="calculateMidSemRequirements()" class="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg px-2.5 py-1.5 font-mono text-xs focus:ring-2 focus:ring-brand-500 outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] text-slate-400 mb-1">Total Max Marks</label>
+                                <input type="number" id="internal-total" value="20" min="0" oninput="calculateMidSemRequirements()" class="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg px-2.5 py-1.5 font-mono text-xs focus:ring-2 focus:ring-brand-500 outline-none">
+                            </div>
+                        </div>
+
+                        <!-- Practical / Viva -->
+                        <div class="p-3.5 bg-slate-50 dark:bg-slate-800/50 rounded-2xl border border-slate-200/80 dark:border-slate-700/80 grid grid-cols-1 sm:grid-cols-3 gap-3 items-center">
+                            <div>
+                                <span class="font-semibold block text-slate-700 dark:text-slate-200">Practical / Viva Exam</span>
+                                <span class="text-[10px] text-slate-400">Lab Work & Submissions</span>
+                            </div>
+                            <div>
+                                <label class="block text-[10px] text-slate-400 mb-1">Marks Obtained</label>
+                                <input type="number" id="prac-obtained" value="24" min="0" max="30" oninput="calculateMidSemRequirements()" class="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg px-2.5 py-1.5 font-mono text-xs focus:ring-2 focus:ring-brand-500 outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] text-slate-400 mb-1">Total Max Marks</label>
+                                <input type="number" id="prac-total" value="30" min="0" oninput="calculateMidSemRequirements()" class="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg px-2.5 py-1.5 font-mono text-xs focus:ring-2 focus:ring-brand-500 outline-none">
+                            </div>
+                        </div>
+
+                        <!-- Target Grade / Percentage Selection -->
+                        <div class="p-3.5 bg-brand-50/50 dark:bg-brand-950/30 rounded-2xl border border-brand-200/60 dark:border-brand-800/60 grid grid-cols-1 sm:grid-cols-2 gap-3 items-center">
+                            <div>
+                                <label class="font-semibold block text-brand-900 dark:text-brand-200">End-Sem Exam (ESE) Total</label>
+                                <span class="text-[10px] text-slate-500">GTU final external exam paper total</span>
+                            </div>
+                            <div>
+                                <input type="number" id="ese-total" value="70" min="1" oninput="calculateMidSemRequirements()" class="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg px-2.5 py-1.5 font-mono text-xs focus:ring-2 focus:ring-brand-500 outline-none">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Prediction Output Panel -->
+                <div class="lg:col-span-5 flex flex-col justify-between space-y-5">
+                    <!-- Passing Criteria Box -->
+                    <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 shadow-sm flex-1 flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-center justify-between mb-4">
+                                <h3 class="font-bold text-base flex items-center space-x-2">
+                                    <i class="fas fa-flag-checkered text-accent-emerald"></i>
+                                    <span>ESE Passing Target</span>
+                                </h3>
+                                <span id="mid-status-tag" class="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300">Passing Safe</span>
+                            </div>
+
+                            <div class="p-4 bg-slate-50 dark:bg-slate-800/80 rounded-2xl text-center mb-4">
+                                <span class="text-xs text-slate-500 dark:text-slate-400 block mb-1">Minimum Marks Required in ESE (Out of <span id="ese-total-span">70</span>) to Pass Course</span>
+                                <span id="ese-required-pass" class="text-4xl font-extrabold text-accent-emerald font-mono">23</span>
+                                <span class="text-xs text-slate-400 block mt-1">(Equivalent to ~33% threshold in ESE)</span>
+                            </div>
+
+                            <!-- Target Grade Scale Table -->
+                            <h4 class="font-semibold text-xs text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2">Required ESE Marks for Target GTU Grade</h4>
+                            <div class="space-y-1.5 text-xs">
+                                <div class="flex items-center justify-between p-2 rounded-lg bg-slate-50 dark:bg-slate-800/50">
+                                    <span class="font-semibold text-brand-600 dark:text-brand-400">AA Grade (90%+)</span>
+                                    <span id="target-ese-aa" class="font-mono font-bold">61 / 70</span>
+                                </div>
+                                <div class="flex items-center justify-between p-2 rounded-lg bg-slate-50 dark:bg-slate-800/50">
+                                    <span class="font-semibold text-brand-600 dark:text-brand-400">AB Grade (80%+)</span>
+                                    <span id="target-ese-ab" class="font-mono font-bold">50 / 70</span>
+                                </div>
+                                <div class="flex items-center justify-between p-2 rounded-lg bg-slate-50 dark:bg-slate-800/50">
+                                    <span class="font-semibold text-brand-600 dark:text-brand-400">BB Grade (70%+)</span>
+                                    <span id="target-ese-bb" class="font-mono font-bold">39 / 70</span>
+                                </div>
+                                <div class="flex items-center justify-between p-2 rounded-lg bg-slate-50 dark:bg-slate-800/50">
+                                    <span class="font-semibold text-brand-600 dark:text-brand-400">BC Grade (60%+)</span>
+                                    <span id="target-ese-bc" class="font-mono font-bold">28 / 70</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mt-4 pt-3 border-t border-slate-100 dark:border-slate-800 text-[11px] text-slate-500">
+                            <i class="fas fa-info-circle text-brand-500 mr-1"></i>
+                            Calculated assuming GTU minimum 35% overall aggregate criteria and 33% component cutoff.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========================================================================= -->
+        <!-- TAB 3: ACADEMIC RISK PREDICTOR -->
+        <!-- ========================================================================= -->
+        <div id="tab-content-risk" class="tab-content hidden space-y-6">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                <!-- Input Risk Factors Form -->
+                <div class="lg:col-span-7 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 shadow-sm space-y-5">
+                    <div>
+                        <h3 class="font-bold text-base">Student Risk Assessment Parameters</h3>
+                        <p class="text-xs text-slate-500 dark:text-slate-400">Input your current academic metrics to trigger the rule-engine risk prediction model.</p>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
+                        <!-- SPI/CPI -->
+                        <div>
+                            <label class="block font-medium mb-1 text-slate-700 dark:text-slate-300">Current Cumulative CPI / Last SPI</label>
+                            <input type="number" id="risk-cpi" min="0" max="10" step="0.1" value="6.2" oninput="runRiskEngine()" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl px-3 py-2 font-mono text-xs focus:ring-2 focus:ring-brand-500 outline-none">
+                        </div>
+
+                        <!-- Mid-Sem Aggregate % -->
+                        <div>
+                            <label class="block font-medium mb-1 text-slate-700 dark:text-slate-300">Mid-Sem Average Score (%)</label>
+                            <input type="number" id="risk-mid-pct" min="0" max="100" value="48" oninput="runRiskEngine()" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl px-3 py-2 font-mono text-xs focus:ring-2 focus:ring-brand-500 outline-none">
+                        </div>
+
+                        <!-- Attendance % -->
+                        <div>
+                            <label class="block font-medium mb-1 text-slate-700 dark:text-slate-300">Class Attendance (%)</label>
+                            <input type="number" id="risk-attendance" min="0" max="100" value="68" oninput="runRiskEngine()" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl px-3 py-2 font-mono text-xs focus:ring-2 focus:ring-brand-500 outline-none">
+                        </div>
+
+                        <!-- Active Backlogs / FF -->
+                        <div>
+                            <label class="block font-medium mb-1 text-slate-700 dark:text-slate-300">Active Backlogs / FF Count</label>
+                            <input type="number" id="risk-backlogs" min="0" max="10" value="1" oninput="runRiskEngine()" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl px-3 py-2 font-mono text-xs focus:ring-2 focus:ring-brand-500 outline-none">
+                        </div>
+
+                        <!-- Assignment Completion % -->
+                        <div>
+                            <label class="block font-medium mb-1 text-slate-700 dark:text-slate-300">Assignment Completion (%)</label>
+                            <input type="number" id="risk-assignments" min="0" max="100" value="70" oninput="runRiskEngine()" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl px-3 py-2 font-mono text-xs focus:ring-2 focus:ring-brand-500 outline-none">
+                        </div>
+
+                        <!-- Daily Study Hours -->
+                        <div>
+                            <label class="block font-medium mb-1 text-slate-700 dark:text-slate-300">Self-Study (Hours / Day)</label>
+                            <input type="number" id="risk-study-hrs" min="0" max="16" step="0.5" value="1.5" oninput="runRiskEngine()" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl px-3 py-2 font-mono text-xs focus:ring-2 focus:ring-brand-500 outline-none">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Risk Score & Diagnosis Output Panel -->
+                <div class="lg:col-span-5 space-y-5">
+                    <!-- Meter Card -->
+                    <div id="risk-card-container" class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 shadow-sm text-center transition-all">
+                        <span class="text-xs font-semibold uppercase tracking-wider text-slate-400 block mb-2">Calculated Academic Risk Score</span>
+                        
+                        <!-- Big Metric Display -->
+                        <div class="relative flex items-center justify-center my-4">
+                            <span id="risk-percentage-display" class="text-5xl font-extrabold font-mono text-amber-500">42%</span>
+                        </div>
+
+                        <!-- Risk Badge -->
+                        <div class="inline-block mb-4">
+                            <span id="risk-level-badge" class="px-4 py-1.5 rounded-full text-xs font-bold bg-amber-100 text-amber-800 dark:bg-amber-950/80 dark:text-amber-300 border border-amber-300 dark:border-amber-800">
+                                Moderate Risk Zone
+                            </span>
+                        </div>
+
+                        <p id="risk-summary-text" class="text-xs text-slate-500 dark:text-slate-400 px-4">
+                            You are in the moderate risk spectrum. Attendance deficit and active backlog pose potential GTU detention or lower SPI risks.
+                        </p>
+                    </div>
+
+                    <!-- Breakdown Factors -->
+                    <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 shadow-sm">
+                        <h4 class="font-bold text-xs uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-3">Key Risk Factor Breakdown</h4>
+                        <div id="risk-breakdown-list" class="space-y-2 text-xs">
+                            <!-- Injected dynamically -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Actionable Recovery Roadmap -->
+            <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 shadow-sm">
+                <h3 class="font-bold text-base flex items-center space-x-2 mb-4">
+                    <i class="fas fa-route text-brand-500"></i>
+                    <span>Personalized Academic Recovery Roadmap</span>
+                </h3>
+                <div id="risk-roadmap-container" class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
+                    <!-- Dynamic roadmap cards injected here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- ========================================================================= -->
+        <!-- TAB 4: PERFORMANCE ANALYTICS & GUIDELINES -->
+        <!-- ========================================================================= -->
+        <div id="tab-content-analytics" class="tab-content hidden space-y-6">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                <!-- Visual Chart Panel -->
+                <div class="lg:col-span-8 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 shadow-sm space-y-4">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h3 class="font-bold text-base">Semester SPI Progression & Subject Weightage</h3>
+                            <p class="text-xs text-slate-500 dark:text-slate-400">Visual visualization of current subject credit distribution.</p>
+                        </div>
+                        <button onclick="exportReportPDF()" class="px-3 py-1.5 rounded-xl text-xs font-semibold bg-brand-50 dark:bg-brand-950/60 text-brand-600 dark:text-brand-300 hover:bg-brand-100 transition border border-brand-200 dark:border-brand-800 flex items-center space-x-1.5">
+                            <i class="fas fa-download"></i>
+                            <span>Export Summary</span>
+                        </button>
+                    </div>
+
+                    <!-- Canvas Container -->
+                    <div class="h-64 sm:h-72 w-full relative">
+                        <canvas id="analyticsChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Fast Actions & Guidelines -->
+                <div class="lg:col-span-4 space-y-6">
+                    <!-- LocalStorage Records -->
+                    <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 shadow-sm space-y-3">
+                        <h3 class="font-bold text-base flex items-center space-x-2">
+                            <i class="fas fa-box-archive text-accent-violet"></i>
+                            <span>Saved History</span>
+                        </h3>
+                        <p class="text-xs text-slate-500 dark:text-slate-400">Save current semester configuration locally on your device.</p>
+                        
+                        <div class="flex space-x-2 pt-2">
+                            <button onclick="saveCurrentSemester()" class="flex-1 py-2 rounded-xl text-xs font-semibold bg-brand-600 hover:bg-brand-700 text-white transition">
+                                <i class="fas fa-save mr-1"></i> Save State
+                            </button>
+                            <button onclick="loadSavedSemester()" class="flex-1 py-2 rounded-xl text-xs font-semibold bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 transition">
+                                <i class="fas fa-folder-open mr-1"></i> Restore
+                            </button>
+                        </div>
+                        <div id="saved-toast" class="hidden text-[11px] text-emerald-500 font-semibold text-center pt-1">State saved to localStorage!</div>
+                    </div>
+
+                    <!-- GTU Rules Info -->
+                    <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 shadow-sm space-y-3 text-xs">
+                        <h4 class="font-bold text-sm text-slate-800 dark:text-slate-200">GTU Key Academic Rules</h4>
+                        <ul class="space-y-2 text-slate-500 dark:text-slate-400">
+                            <li class="flex items-start space-x-2">
+                                <i class="fas fa-check text-brand-500 mt-0.5"></i>
+                                <span><strong>Detention Rule:</strong> Attendance strictly below 75% triggers GTU exam hall ticket lock.</span>
+                            </li>
+                            <li class="flex items-start space-x-2">
+                                <i class="fas fa-check text-brand-500 mt-0.5"></i>
+                                <span><strong>Passing Criteria:</strong> Minimum 35% in aggregate (Theory + Mid + Practical combined).</span>
+                            </li>
+                            <li class="flex items-start space-x-2">
+                                <i class="fas fa-check text-brand-500 mt-0.5"></i>
+                                <span><strong>CPI Calculation:</strong> Cumulative aggregate across all semesters based on total credit weighted points.</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="w-full border-t border-slate-200 dark:border-slate-800 py-4 text-center text-xs text-slate-500">
+        <p>© 2026 EduPulse GTU Engine • Built for Engineering Students • Designed for Gujarat Technological University</p>
+    </footer>
+
+    <!-- JS APP LOGIC -->
+    <script>
+        // Grade Scale Mapping
+        const GTU_GRADES = {
+            'AA': 10,
+            'AB': 9,
+            'BB': 8,
+            'BC': 7,
+            'CC': 6,
+            'CD': 5,
+            'DD': 4,
+            'FF': 0
+        };
+
+        // State Data
+        let subjects = [
+            { id: 1, name: 'Data Structures (3130702)', credits: 5, grade: 'AA' },
+            { id: 2, name: 'Database Management (3130703)', credits: 4, grade: 'AB' },
+            { id: 3, name: 'Digital Electronics (3130704)', credits: 4, grade: 'BB' },
+            { id: 4, name: 'Maths-III / Probability (3130006)', credits: 4, grade: 'BC' },
+            { id: 5, name: 'Effective Tech Comm (3130004)', credits: 3, grade: 'AA' }
+        ];
+
+        let analyticsChartInstance = null;
+
+        // On Page Load
+        window.addEventListener('DOMContentLoaded', () => {
+            initTheme();
+            renderSpiTable();
+            calculateMidSemRequirements();
+            runRiskEngine();
+            initChart();
+        });
+
+        // Theme Switcher
+        function initTheme() {
+            const themeToggleBtn = document.getElementById('theme-toggle');
+            const themeIcon = document.getElementById('theme-icon');
+
+            themeToggleBtn.addEventListener('click', () => {
+                document.documentElement.classList.toggle('dark');
+                if (document.documentElement.classList.contains('dark')) {
+                    themeIcon.className = 'fas fa-sun text-amber-400 text-sm';
+                } else {
+                    themeIcon.className = 'fas fa-moon text-slate-600 text-sm';
+                }
+                if (analyticsChartInstance) updateChart();
+            });
+        }
+
+        // Tab Switching Engine
+        function switchTab(tabKey) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('bg-white', 'dark:bg-slate-800', 'text-brand-600', 'dark:text-white', 'shadow-sm');
+                btn.classList.add('text-slate-600', 'dark:text-slate-400');
+            });
+
+            const activeContent = document.getElementById(`tab-content-${tabKey}`);
+            const activeBtn = document.getElementById(`tab-btn-${tabKey}`);
+
+            if (activeContent && activeBtn) {
+                activeContent.classList.remove('hidden');
+                activeBtn.classList.add('bg-white', 'dark:bg-slate-800', 'text-brand-600', 'dark:text-white', 'shadow-sm');
+                activeBtn.classList.remove('text-slate-600', 'dark:text-slate-400');
+            }
+
+            if (tabKey === 'analytics') {
+                setTimeout(updateChart, 100);
+            }
+        }
+
+        // ==========================================
+        // TAB 1: SPI CALCULATOR FUNCTIONS
+        // ==========================================
+        function renderSpiTable() {
+            const tbody = document.getElementById('spi-tbody');
+            tbody.innerHTML = '';
+
+            subjects.forEach((sub, index) => {
+                const tr = document.createElement('tr');
+                tr.className = 'hover:bg-slate-50/50 dark:hover:bg-slate-800/30 transition';
+
+                const gradePoint = GTU_GRADES[sub.grade] !== undefined ? GTU_GRADES[sub.grade] : 0;
+                const creditPoint = sub.credits * gradePoint;
+
+                tr.innerHTML = `
+                    <td class="py-2.5 px-2">
+                        <input type="text" value="${sub.name}" onchange="updateSubjectName(${index}, this.value)" class="w-full bg-transparent font-medium focus:bg-slate-100 dark:focus:bg-slate-800 rounded px-2 py-1 outline-none text-xs">
+                    </td>
+                    <td class="py-2.5 px-2">
+                        <input type="number" min="1" max="12" value="${sub.credits}" onchange="updateSubjectCredits(${index}, this.value)" class="w-20 bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded px-2 py-1 text-xs font-mono">
+                    </td>
+                    <td class="py-2.5 px-2">
+                        <select onchange="updateSubjectGrade(${index}, this.value)" class="w-28 bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded px-2 py-1 text-xs font-semibold">
+                            ${Object.keys(GTU_GRADES).map(g => `<option value="${g}" ${sub.grade === g ? 'selected' : ''}>${g} (${GTU_GRADES[g]})</option>`).join('')}
+                        </select>
+                    </td>
+                    <td class="py-2.5 px-2 text-right font-mono text-xs font-semibold">${gradePoint}</td>
+                    <td class="py-2.5 px-2 text-right font-mono text-xs font-bold text-brand-600 dark:text-brand-400">${creditPoint}</td>
+                    <td class="py-2.5 px-2 text-center">
+                        <button onclick="removeSubjectRow(${index})" class="text-slate-400 hover:text-rose-500 transition p-1">
+                            <i class="fas fa-trash-can text-xs"></i>
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            calculateSPI();
+        }
+
+        function addSubjectRow() {
+            subjects.push({
+                id: Date.now(),
+                name: `New Subject ${subjects.length + 1}`,
+                credits: 4,
+                grade: 'BB'
+            });
+            renderSpiTable();
+        }
+
+        function removeSubjectRow(index) {
+            if (subjects.length <= 1) return;
+            subjects.splice(index, 1);
+            renderSpiTable();
+        }
+
+        function updateSubjectName(index, val) { subjects[index].name = val; }
+        function updateSubjectCredits(index, val) { subjects[index].credits = parseFloat(val) || 0; calculateSPI(); }
+        function updateSubjectGrade(index, val) { subjects[index].grade = val; calculateSPI(); }
+
+        function calculateSPI() {
+            let totalCredits = 0;
+            let totalPoints = 0;
+
+            subjects.forEach(s => {
+                const pts = GTU_GRADES[s.grade] || 0;
+                totalCredits += s.credits;
+                totalPoints += (s.credits * pts);
+            });
+
+            const spi = totalCredits > 0 ? (totalPoints / totalCredits) : 0;
+            
+            // Update UI
+            document.getElementById('spi-result').innerText = spi.toFixed(2);
+            document.getElementById('total-credits-display').innerText = totalCredits;
+            document.getElementById('total-points-display').innerText = totalPoints;
+
+            // Status Badge
+            const badge = document.getElementById('spi-status-badge');
+            const desc = document.getElementById('spi-grade-desc');
+            if (spi >= 8.5) {
+                badge.innerText = 'First Class Distinction';
+                badge.className = 'px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-400/30 text-emerald-100';
+                desc.innerText = 'Outstanding performance! Keep up the momentum.';
+            } else if (spi >= 7.0) {
+                badge.innerText = 'First Class';
+                badge.className = 'px-2.5 py-1 rounded-full text-xs font-bold bg-cyan-400/30 text-cyan-100';
+                desc.innerText = 'Good academic standing in GTU GTU scale.';
+            } else if (spi >= 5.5) {
+                badge.innerText = 'Second Class';
+                badge.className = 'px-2.5 py-1 rounded-full text-xs font-bold bg-amber-400/30 text-amber-100';
+                desc.innerText = 'Satisfactory. Consider boosting core subjects.';
+            } else {
+                badge.innerText = 'Pass Class / At Risk';
+                badge.className = 'px-2.5 py-1 rounded-full text-xs font-bold bg-rose-400/30 text-rose-100';
+                desc.innerText = 'Academic risk threshold! Attention required.';
+            }
+
+            calculateTargetSPIGoal();
+            if (analyticsChartInstance) updateChart();
+        }
+
+        function calculateTargetSPIGoal() {
+            const targetSpi = parseFloat(document.getElementById('target-spi-input').value) || 0;
+            let totalCredits = 0;
+            let earnedPoints = 0;
+
+            subjects.forEach(s => {
+                totalCredits += s.credits;
+                earnedPoints += (s.credits * (GTU_GRADES[s.grade] || 0));
+            });
+
+            const requiredTotalPoints = targetSpi * totalCredits;
+            const diff = requiredTotalPoints - earnedPoints;
+
+            const targetOutput = document.getElementById('target-required-point');
+            if (diff <= 0) {
+                targetOutput.innerText = 'Target Achieved!';
+                targetOutput.className = 'text-lg font-bold font-mono text-emerald-500';
+            } else {
+                targetOutput.innerText = `+${diff.toFixed(1)} Pts Needed`;
+                targetOutput.className = 'text-lg font-bold font-mono text-brand-600 dark:text-brand-400';
+            }
+        }
+
+        function resetSpiTable() {
+            subjects = [
+                { id: 1, name: 'Subject 1', credits: 4, grade: 'AA' },
+                { id: 2, name: 'Subject 2', credits: 3, grade: 'AB' }
+            ];
+            renderSpiTable();
+        }
+
+        function loadGtuPreset() {
+            subjects = [
+                { id: 1, name: 'Computer Networks (3150710)', credits: 5, grade: 'AA' },
+                { id: 2, name: 'Software Engineering (3150711)', credits: 4, grade: 'AB' },
+                { id: 3, name: 'Analysis of Algorithms (3150703)', credits: 5, grade: 'BB' },
+                { id: 4, name: 'Professional Ethics (3150005)', credits: 2, grade: 'AA' },
+                { id: 5, name: 'Python Programming (3150713)', credits: 4, grade: 'AB' }
+            ];
+            renderSpiTable();
+        }
+
+        // ==========================================
+        // TAB 2: MID-SEM & ESE TARGET PREDICTOR
+        // ==========================================
+        function applyEvaluationPatternPreset() {
+            const val = document.getElementById('mid-preset-select').value;
+            if (val === 'gtu-standard') {
+                document.getElementById('mid-obtained').value = 21; document.getElementById('mid-total').value = 30;
+                document.getElementById('internal-obtained').value = 16; document.getElementById('internal-total').value = 20;
+                document.getElementById('prac-obtained').value = 24; document.getElementById('prac-total').value = 30;
+                document.getElementById('ese-total').value = 70;
+            } else if (val === 'gtu-theory-only') {
+                document.getElementById('mid-obtained').value = 18; document.getElementById('mid-total').value = 30;
+                document.getElementById('internal-obtained').value = 0; document.getElementById('internal-total').value = 0;
+                document.getElementById('prac-obtained').value = 0; document.getElementById('prac-total').value = 0;
+                document.getElementById('ese-total').value = 70;
+            } else if (val === '50-50') {
+                document.getElementById('mid-obtained').value = 35; document.getElementById('mid-total').value = 50;
+                document.getElementById('internal-obtained').value = 0; document.getElementById('internal-total').value = 0;
+                document.getElementById('prac-obtained').value = 0; document.getElementById('prac-total').value = 0;
+                document.getElementById('ese-total').value = 50;
+            }
+            calculateMidSemRequirements();
+        }
+
+        function calculateMidSemRequirements() {
+            const midObt = parseFloat(document.getElementById('mid-obtained').value) || 0;
+            const midTot = parseFloat(document.getElementById('mid-total').value) || 1;
+            const intObt = parseFloat(document.getElementById('internal-obtained').value) || 0;
+            const intTot = parseFloat(document.getElementById('internal-total').value) || 0;
+            const pracObt = parseFloat(document.getElementById('prac-obtained').value) || 0;
+            const pracTot = parseFloat(document.getElementById('prac-total').value) || 0;
+            const eseTot = parseFloat(document.getElementById('ese-total').value) || 70;
+
+            document.getElementById('ese-total-span').innerText = eseTot;
+
+            const totalInternalObtained = midObt + intObt + pracObt;
+            const totalMaxCourse = midTot + intTot + pracTot + eseTot;
+
+            // GTU 35% overall passing benchmark
+            const overallPassingThreshold = totalMaxCourse * 0.35;
+            let requiredEsePass = overallPassingThreshold - totalInternalObtained;
+            
+            // GTU ESE minimum component 33% rule
+            const minimumEseComponentCutoff = eseTot * 0.33;
+            requiredEsePass = Math.max(requiredEsePass, minimumEseComponentCutoff);
+
+            const esePassFormatted = Math.min(Math.max(Math.ceil(requiredEsePass), 0), eseTot);
+            document.getElementById('ese-required-pass').innerText = esePassFormatted;
+
+            // Status Badge
+            const statusTag = document.getElementById('mid-status-tag');
+            if (esePassFormatted <= (eseTot * 0.4)) {
+                statusTag.innerText = 'Pass Zone: Comfortable';
+                statusTag.className = 'px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300';
+            } else if (esePassFormatted <= (eseTot * 0.65)) {
+                statusTag.innerText = 'Moderate ESE Score Required';
+                statusTag.className = 'px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-amber-100 text-amber-700 dark:bg-amber-950 dark:text-amber-300';
+            } else {
+                statusTag.innerText = 'Critical High Marks Needed';
+                statusTag.className = 'px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-rose-100 text-rose-700 dark:bg-rose-950 dark:text-rose-300';
+            }
+
+            // Target Grades
+            const calculateTargetEse = (targetPct) => {
+                const targetTotalPoints = totalMaxCourse * targetPct;
+                const req = Math.ceil(targetTotalPoints - totalInternalObtained);
+                return Math.min(Math.max(req, 0), eseTot);
+            };
+
+            document.getElementById('target-ese-aa').innerText = `${calculateTargetEse(0.85)} / ${eseTot}`;
+            document.getElementById('target-ese-ab').innerText = `${calculateTargetEse(0.75)} / ${eseTot}`;
+            document.getElementById('target-ese-bb').innerText = `${calculateTargetEse(0.65)} / ${eseTot}`;
+            document.getElementById('target-ese-bc').innerText = `${calculateTargetEse(0.55)} / ${eseTot}`;
+        }
+
+        // ==========================================
+        // TAB 3: ACADEMIC RISK PREDICTOR ENGINE
+        // ==========================================
+        function runRiskEngine() {
+            const cpi = parseFloat(document.getElementById('risk-cpi').value) || 0;
+            const midPct = parseFloat(document.getElementById('risk-mid-pct').value) || 0;
+            const attendance = parseFloat(document.getElementById('risk-attendance').value) || 0;
+            const backlogs = parseInt(document.getElementById('risk-backlogs').value) || 0;
+            const assignments = parseFloat(document.getElementById('risk-assignments').value) || 0;
+            const studyHrs = parseFloat(document.getElementById('risk-study-hrs').value) || 0;
+
+            // Risk Scoring Weights Rule Engine
+            let riskPoints = 0;
+
+            // CPI Penalty (Max 25 pts)
+            if (cpi < 5.0) riskPoints += 25;
+            else if (cpi < 6.0) riskPoints += 18;
+            else if (cpi < 7.0) riskPoints += 10;
+
+            // Mid-Sem Deficit (Max 25 pts)
+            if (midPct < 40) riskPoints += 25;
+            else if (midPct < 55) riskPoints += 16;
+            else if (midPct < 70) riskPoints += 8;
+
+            // Attendance Risk (Max 25 pts) - Detention Trigger
+            if (attendance < 75) riskPoints += 25;
+            else if (attendance < 80) riskPoints += 12;
+
+            // Active Backlogs Burden (Max 15 pts)
+            riskPoints += Math.min(backlogs * 7, 15);
+
+            // Assignment & Study Habits (Max 10 pts)
+            if (assignments < 60) riskPoints += 5;
+            if (studyHrs < 2) riskPoints += 5;
+
+            // Cap at 100%
+            const riskPct = Math.min(Math.max(riskPoints, 0), 100);
+
+            // UI Render Risk Score
+            const pctDisplay = document.getElementById('risk-percentage-display');
+            const badge = document.getElementById('risk-level-badge');
+            const summary = document.getElementById('risk-summary-text');
+
+            pctDisplay.innerText = `${riskPct}%`;
+
+            if (riskPct >= 65) {
+                pctDisplay.className = 'text-5xl font-extrabold font-mono text-rose-500';
+                badge.innerText = 'HIGH ACADEMIC RISK ZONE';
+                badge.className = 'px-4 py-1.5 rounded-full text-xs font-bold bg-rose-100 text-rose-800 dark:bg-rose-950/80 dark:text-rose-300 border border-rose-300 dark:border-rose-800';
+                summary.innerText = 'Urgent intervention needed! Attendance detention risk or multiple backlogs threatening academic progress.';
+            } else if (riskPct >= 35) {
+                pctDisplay.className = 'text-5xl font-extrabold font-mono text-amber-500';
+                badge.innerText = 'MODERATE RISK ZONE';
+                badge.className = 'px-4 py-1.5 rounded-full text-xs font-bold bg-amber-100 text-amber-800 dark:bg-amber-950/80 dark:text-amber-300 border border-amber-300 dark:border-amber-800';
+                summary.innerText = 'Moderate risk profile. Focus on closing attendance gaps and preparing early for ESE exams.';
+            } else {
+                pctDisplay.className = 'text-5xl font-extrabold font-mono text-emerald-500';
+                badge.innerText = 'SAFE / EXCELLENCE ZONE';
+                badge.className = 'px-4 py-1.5 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800 dark:bg-emerald-950/80 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800';
+                summary.innerText = 'Great academic health! Maintain current study habits and target GTU distinction standard.';
+            }
+
+            // Breakdown List
+            const list = document.getElementById('risk-breakdown-list');
+            list.innerHTML = `
+                <div class="flex items-center justify-between p-2 rounded-lg bg-slate-50 dark:bg-slate-800/50">
+                    <span>Attendance Status (${attendance}%)</span>
+                    <span class="font-bold font-mono ${attendance < 75 ? 'text-rose-500' : 'text-emerald-500'}">${attendance < 75 ? 'Detention Warning' : 'Safe'}</span>
+                </div>
+                <div class="flex items-center justify-between p-2 rounded-lg bg-slate-50 dark:bg-slate-800/50">
+                    <span>Backlog Burden (${backlogs} FF)</span>
+                    <span class="font-bold font-mono ${backlogs > 0 ? 'text-amber-500' : 'text-emerald-500'}">${backlogs > 0 ? `+${backlogs * 7}% Risk` : 'Clear'}</span>
+                </div>
+                <div class="flex items-center justify-between p-2 rounded-lg bg-slate-50 dark:bg-slate-800/50">
+                    <span>Mid-Sem Deficit (${midPct}%)</span>
+                    <span class="font-bold font-mono ${midPct < 50 ? 'text-rose-500' : 'text-emerald-500'}">${midPct < 50 ? 'Low Margin' : 'Good'}</span>
+                </div>
+            `;
+
+            // Action Roadmap Generation
+            const roadmap = document.getElementById('risk-roadmap-container');
+            roadmap.innerHTML = `
+                <div class="p-3.5 rounded-2xl bg-brand-50/50 dark:bg-brand-950/30 border border-brand-200/50 dark:border-brand-800/50">
+                    <div class="font-bold text-brand-600 dark:text-brand-400 mb-1 flex items-center space-x-1.5">
+                        <i class="fas fa-clock text-xs"></i>
+                        <span>1. Attendance Recovery</span>
+                    </div>
+                    <p class="text-[11px] text-slate-500 dark:text-slate-400">Target 100% attendance in upcoming lab and tutorial sessions to cross GTU 75% cutoff.</p>
+                </div>
+                <div class="p-3.5 rounded-2xl bg-brand-50/50 dark:bg-brand-950/30 border border-brand-200/50 dark:border-brand-800/50">
+                    <div class="font-bold text-brand-600 dark:text-brand-400 mb-1 flex items-center space-x-1.5">
+                        <i class="fas fa-book-open text-xs"></i>
+                        <span>2. ESE Paper Solving</span>
+                    </div>
+                    <p class="text-[11px] text-slate-500 dark:text-slate-400">Solve GTU past 3-year question papers. Focus heavily on 7-mark high-weightage topics.</p>
+                </div>
+                <div class="p-3.5 rounded-2xl bg-brand-50/50 dark:bg-brand-950/30 border border-brand-200/50 dark:border-brand-800/50">
+                    <div class="font-bold text-brand-600 dark:text-brand-400 mb-1 flex items-center space-x-1.5">
+                        <i class="fas fa-calendar-check text-xs"></i>
+                        <span>3. Weekly Study Plan</span>
+                    </div>
+                    <p class="text-[11px] text-slate-500 dark:text-slate-400">Dedicate minimum 2.5 hours daily to core engineering subjects to boost SPI next semester.</p>
+                </div>
+            `;
+        }
+
+        // ==========================================
+        // TAB 4: CHART & ANALYTICS ENGINE
+        // ==========================================
+        function initChart() {
+            const ctx = document.getElementById('analyticsChart').getContext('2d');
+            const isDark = document.documentElement.classList.contains('dark');
+
+            analyticsChartInstance = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: subjects.map(s => s.name),
+                    datasets: [{
+                        label: 'Subject Credits',
+                        data: subjects.map(s => s.credits),
+                        backgroundColor: '#6366f1',
+                        borderRadius: 8
+                    }, {
+                        label: 'Earned Grade Points',
+                        data: subjects.map(s => GTU_GRADES[s.grade] || 0),
+                        backgroundColor: '#06b6d4',
+                        borderRadius: 8
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            labels: { color: isDark ? '#cbd5e1' : '#334155', font: { family: 'Inter', size: 11 } }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 10,
+                            grid: { color: isDark ? '#1e293b' : '#e2e8f0' },
+                            ticks: { color: isDark ? '#94a3b8' : '#64748b' }
+                        },
+                        x: {
+                            grid: { display: false },
+                            ticks: { color: isDark ? '#94a3b8' : '#64748b', font: { size: 10 } }
+                        }
+                    }
+                }
+            });
+        }
+
+        function updateChart() {
+            if (!analyticsChartInstance) return;
+            const isDark = document.documentElement.classList.contains('dark');
+            
+            analyticsChartInstance.data.labels = subjects.map(s => s.name);
+            analyticsChartInstance.data.datasets[0].data = subjects.map(s => s.credits);
+            analyticsChartInstance.data.datasets[1].data = subjects.map(s => GTU_GRADES[s.grade] || 0);
+
+            analyticsChartInstance.options.plugins.legend.labels.color = isDark ? '#cbd5e1' : '#334155';
+            analyticsChartInstance.options.scales.y.grid.color = isDark ? '#1e293b' : '#e2e8f0';
+            analyticsChartInstance.options.scales.y.ticks.color = isDark ? '#94a3b8' : '#64748b';
+            analyticsChartInstance.options.scales.x.ticks.color = isDark ? '#94a3b8' : '#64748b';
+
+            analyticsChartInstance.update();
+        }
+
+        // LocalStorage Persistence
+        function saveCurrentSemester() {
+            const data = {
+                subjects: subjects,
+                timestamp: new Date().toISOString()
+            };
+            localStorage.setItem('edupulse_gtu_state', JSON.stringify(data));
+            const toast = document.getElementById('saved-toast');
+            toast.classList.remove('hidden');
+            setTimeout(() => toast.classList.add('hidden'), 2500);
+        }
+
+        function loadSavedSemester() {
+            const saved = localStorage.getItem('edupulse_gtu_state');
+            if (saved) {
+                const parsed = JSON.parse(saved);
+                if (parsed.subjects) {
+                    subjects = parsed.subjects;
+                    renderSpiTable();
+                    alert('Semester data successfully restored from local storage!');
+                }
+            } else {
+                alert('No saved state found in local storage.');
+            }
+        }
+
+        function exportReportPDF() {
+            window.print();
+        }
+    </script>
+</body>
+</html>
