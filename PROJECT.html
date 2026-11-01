@@ -1,0 +1,1895 @@
+<!DOCTYPE html>
+<html lang="en" class="dark scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GTU Results - Official Academic & Exam Services Portal</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        gtu: {
+                            50: '#f0f6ff',
+                            100: '#e0edff',
+                            500: '#2563eb',
+                            600: '#1d4ed8',
+                            700: '#1e40af',
+                            800: '#1e3a8a',
+                            900: '#172554',
+                            950: '#0b132b',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- FontAwesome CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- SweetAlert2 CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .font-mono-num { font-family: 'JetBrains Mono', monospace; }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(148, 163, 184, 0.3); border-radius: 9999px; }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(148, 163, 184, 0.5); }
+        .modal-blur { backdrop-filter: blur(8px); }
+        canvas.captcha-canvas {
+            border-radius: 0.75rem;
+            background: #0f172a;
+            border: 1px solid #334155;
+            user-select: none;
+        }
+    </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col justify-between selection:bg-gtu-600 selection:text-white">
+
+    <!-- NAVIGATION HEADER -->
+    <header class="border-b border-slate-800 bg-slate-900/90 sticky top-0 z-30 backdrop-blur-md">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between">
+            <div class="flex items-center space-x-3 cursor-pointer" onclick="showLandingView()">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-gtu-600 to-indigo-600 flex items-center justify-center text-white font-extrabold text-xl shadow-lg shadow-gtu-600/30">
+                    <i class="fas fa-university"></i>
+                </div>
+                <div>
+                    <h1 class="font-extrabold text-lg leading-none tracking-tight text-white flex items-center space-x-2">
+                        <span>GTU Results</span>
+                        <span id="header-role-badge" class="px-2 py-0.5 text-[10px] font-semibold rounded-full bg-slate-800 text-slate-300 border border-slate-700">Student Portal</span>
+                    </h1>
+                    <p class="text-[11px] text-slate-400 mt-0.5">Gujarat Technological University Official Portal</p>
+                </div>
+            </div>
+
+            <!-- Header Right Controls -->
+            <div class="flex items-center space-x-3">
+                <div id="header-user-info" class="hidden text-right sm:block">
+                    <p id="header-user-name" class="text-xs font-semibold text-white">--</p>
+                    <p id="header-user-enroll" class="text-[10px] text-slate-400">Enrollment: --</p>
+                </div>
+
+                <!-- Logged-in Student Reset Password Button -->
+                <button id="header-reset-pass-btn" onclick="openResetPasswordModal()" class="hidden px-2.5 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-amber-400 border border-slate-700 text-xs font-semibold transition flex items-center space-x-1" title="Reset Password">
+                    <i class="fas fa-key"></i>
+                    <span class="hidden md:inline">Reset Pass</span>
+                </button>
+
+                <button id="auth-action-btn" onclick="openStudentLoginModal()" class="px-3.5 py-1.5 rounded-xl bg-gtu-600 hover:bg-gtu-500 text-white text-xs font-semibold transition flex items-center space-x-1.5 shadow-md shadow-gtu-600/20">
+                    <i class="fas fa-right-to-bracket"></i>
+                    <span id="auth-btn-text">Student Login</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- MAIN CONTAINER -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 py-6 flex-1 w-full">
+
+        <!-- ================= LANDING / GUEST HOME VIEW ================= -->
+        <div id="guest-landing-view" class="space-y-8 max-w-4xl mx-auto py-8">
+            <div class="bg-gradient-to-br from-slate-900 via-slate-900 to-gtu-950 border border-slate-800 rounded-3xl p-8 sm:p-12 shadow-2xl text-center relative overflow-hidden">
+                <div class="absolute -right-12 -bottom-12 w-64 h-64 bg-gtu-600/10 rounded-full blur-3xl pointer-events-none"></div>
+                
+                <div class="w-16 h-16 bg-gtu-600/20 text-gtu-400 rounded-2xl flex items-center justify-center mx-auto mb-6 text-3xl border border-gtu-500/30 shadow-inner">
+                    <i class="fas fa-graduation-cap"></i>
+                </div>
+
+                <h2 class="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">GTU Academic Results & Exam Portal</h2>
+                <p class="text-slate-300 text-sm mt-3 max-w-2xl mx-auto leading-relaxed">
+                    Access your GTU semester performance, calculate projected SPI, estimate minimum End-Sem passing marks, monitor active backlogs, fill exam forms, and review targeted academic risk advisories.
+                </p>
+
+                <div class="mt-8 text-center max-w-xs mx-auto">
+                    <button onclick="openStudentLoginModal()" class="w-full py-3.5 bg-gtu-600 hover:bg-gtu-500 text-white font-bold rounded-2xl text-sm transition shadow-lg shadow-gtu-600/30 flex items-center justify-center space-x-2">
+                        <i class="fas fa-user-graduate"></i>
+                        <span>Login to Student Account</span>
+                    </button>
+                </div>
+
+                <!-- Demo Student Credentials Bar -->
+                <div class="mt-10 pt-6 border-t border-slate-800/80 text-xs text-slate-400">
+                    <p class="font-semibold text-slate-300 mb-2">Demo Student Logins (Password: <code class="text-amber-400">pass123</code>):</p>
+                    <div class="flex flex-wrap items-center justify-center gap-3">
+                        <span class="bg-slate-950 px-3 py-1.5 rounded-xl border border-slate-800"><i class="fas fa-user-circle text-gtu-400 mr-1.5"></i>Aarav Patel: <code class="text-slate-200 font-mono font-semibold">210010107001</code></span>
+                        <span class="bg-slate-950 px-3 py-1.5 rounded-xl border border-slate-800"><i class="fas fa-user-circle text-amber-400 mr-1.5"></i>Priya Sharma (Backlogs): <code class="text-slate-200 font-mono font-semibold">210010107002</code></span>
+                        <span class="bg-slate-950 px-3 py-1.5 rounded-xl border border-slate-800"><i class="fas fa-user-circle text-emerald-400 mr-1.5"></i>Rohan Mehta: <code class="text-slate-200 font-mono font-semibold">210010107003</code></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= STUDENT PORTAL VIEW ================= -->
+        <div id="student-portal-view" class="hidden space-y-6">
+
+            <!-- STUDENT SUB-NAV TABS -->
+            <div class="flex border-b border-slate-800 overflow-x-auto space-x-2 pb-2">
+                <button onclick="switchStudentTab('dashboard')" id="st-tab-btn-dashboard" class="st-tab-btn active px-4 py-2 rounded-xl text-xs font-semibold transition flex items-center space-x-2 whitespace-nowrap bg-gtu-600 text-white">
+                    <i class="fas fa-chart-line"></i><span>Academic Dashboard</span>
+                </button>
+                <button onclick="switchStudentTab('prevsems')" id="st-tab-btn-prevsems" class="st-tab-btn px-4 py-2 rounded-xl text-xs font-semibold transition flex items-center space-x-2 whitespace-nowrap text-slate-400 hover:bg-slate-800">
+                    <i class="fas fa-history text-indigo-400"></i><span>Previous Semesters</span>
+                </button>
+                <button onclick="switchStudentTab('backlogs')" id="st-tab-btn-backlogs" class="st-tab-btn px-4 py-2 rounded-xl text-xs font-semibold transition flex items-center space-x-2 whitespace-nowrap text-slate-400 hover:bg-slate-800 relative">
+                    <i class="fas fa-triangle-exclamation text-amber-400"></i><span>Active Backlogs</span>
+                    <span id="st-backlog-badge-count" class="bg-red-500 text-white text-[10px] px-1.5 py-0.2 rounded-full font-bold hidden">0</span>
+                </button>
+                <button onclick="switchStudentTab('calculator')" id="st-tab-btn-calculator" class="st-tab-btn px-4 py-2 rounded-xl text-xs font-semibold transition flex items-center space-x-2 whitespace-nowrap text-slate-400 hover:bg-slate-800">
+                    <i class="fas fa-calculator"></i><span>SPI & ESE Target Predictor</span>
+                </button>
+                <button onclick="switchStudentTab('forms')" id="st-tab-btn-forms" class="st-tab-btn px-4 py-2 rounded-xl text-xs font-semibold transition flex items-center space-x-2 whitespace-nowrap text-slate-400 hover:bg-slate-800">
+                    <i class="fas fa-file-signature"></i><span>Exam & Re-Assessment Forms</span>
+                </button>
+                <button onclick="switchStudentTab('inbox')" id="st-tab-btn-inbox" class="st-tab-btn px-4 py-2 rounded-xl text-xs font-semibold transition flex items-center space-x-2 whitespace-nowrap text-slate-400 hover:bg-slate-800 relative">
+                    <i class="fas fa-bell"></i><span>Notifications Inbox</span>
+                    <span id="st-inbox-badge-count" class="bg-red-500 text-white text-[10px] px-1.5 py-0.2 rounded-full font-bold hidden">0</span>
+                </button>
+            </div>
+
+            <!-- STUDENT TAB 1: DASHBOARD -->
+            <div id="st-tab-dashboard" class="space-y-6">
+                <!-- Summary Metrics Cards -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 shadow-sm flex items-center justify-between">
+                        <div>
+                            <p class="text-xs font-medium text-slate-400">Calculated SPI</p>
+                            <h3 id="st-card-spi" class="text-3xl font-extrabold font-mono-num text-white mt-1">--</h3>
+                            <p class="text-[11px] text-gtu-400 mt-0.5">GTU 10-Point Scale</p>
+                        </div>
+                        <div class="w-12 h-12 rounded-xl bg-gtu-600/10 border border-gtu-500/20 flex items-center justify-center text-gtu-400 text-xl">
+                            <i class="fas fa-award"></i>
+                        </div>
+                    </div>
+
+                    <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 shadow-sm flex items-center justify-between">
+                        <div>
+                            <p class="text-xs font-medium text-slate-400">Active Backlogs</p>
+                            <h3 id="st-card-backlogs" class="text-3xl font-extrabold font-mono-num text-amber-400 mt-1">0</h3>
+                            <p class="text-[11px] text-slate-400 mt-0.5">Sem <span id="st-sem-badge">--</span> Computer Eng.</p>
+                        </div>
+                        <div class="w-12 h-12 rounded-xl bg-amber-600/10 border border-amber-500/20 flex items-center justify-center text-amber-400 text-xl">
+                            <i class="fas fa-triangle-exclamation"></i>
+                        </div>
+                    </div>
+
+                    <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 shadow-sm flex items-center justify-between">
+                        <div>
+                            <p class="text-xs font-medium text-slate-400">Attendance</p>
+                            <h3 id="st-card-att" class="text-3xl font-extrabold font-mono-num text-white mt-1">--%</h3>
+                            <p class="text-[11px] text-slate-400 mt-0.5">Min required: 75%</p>
+                        </div>
+                        <div class="w-12 h-12 rounded-xl bg-emerald-600/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 text-xl">
+                            <i class="fas fa-user-check"></i>
+                        </div>
+                    </div>
+
+                    <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 shadow-sm flex items-center justify-between">
+                        <div>
+                            <p class="text-xs font-medium text-slate-400">Academic Risk Level</p>
+                            <h3 id="st-card-risk" class="text-xl font-bold mt-1 text-slate-200">--</h3>
+                            <p class="text-[11px] text-slate-400 mt-0.5">Automated Advisor</p>
+                        </div>
+                        <div class="w-12 h-12 rounded-xl bg-amber-600/10 border border-amber-500/20 flex items-center justify-center text-amber-400 text-xl">
+                            <i class="fas fa-shield-halved"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Academic Warning Alert Box (Shown dynamically) -->
+                <div id="st-risk-warning-box" class="hidden p-4 rounded-2xl border flex items-start space-x-4">
+                    <div id="st-risk-warning-icon" class="text-2xl mt-0.5"></div>
+                    <div>
+                        <h4 id="st-risk-warning-title" class="font-bold text-sm">--</h4>
+                        <p id="st-risk-warning-desc" class="text-xs mt-1 leading-relaxed">--</p>
+                        <p id="st-risk-warning-recs" class="text-xs mt-2 font-mono-num leading-relaxed text-slate-300"></p>
+                    </div>
+                </div>
+
+                <!-- Course Marks & Chart Section -->
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                    <div class="lg:col-span-7 bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-sm space-y-4">
+                        <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+                            <h3 class="font-bold text-sm text-white">Current Semester Course Marks</h3>
+                            <span class="text-xs text-slate-400">Mid-Sem & Internal Projections</span>
+                        </div>
+                        <div id="st-subjects-detail-list" class="space-y-3">
+                            <!-- Dynamic course cards -->
+                        </div>
+                    </div>
+
+                    <div class="lg:col-span-5 bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-sm flex flex-col justify-between">
+                        <div>
+                            <h3 class="font-bold text-sm text-white border-b border-slate-800 pb-3 mb-4">Mid-Sem Marks Analysis</h3>
+                            <div class="w-full h-56 relative flex items-center justify-center">
+                                <canvas id="st-performance-chart"></canvas>
+                            </div>
+                        </div>
+                        <p class="text-[11px] text-slate-400 text-center mt-3">Target End-Sem score calculated for minimum 40% overall grade.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- STUDENT TAB 1.5: PREVIOUS SEMESTERS MARKS & HISTORY -->
+            <div id="st-tab-prevsems" class="hidden space-y-6">
+                <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-sm">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-4 mb-4 border-b border-slate-800 gap-3">
+                        <div>
+                            <h3 class="font-bold text-lg text-white">Previous Semester History</h3>
+                            <p class="text-xs text-slate-400">Complete historical academic marksheet, SPI/CPI trajectory, and semester status.</p>
+                        </div>
+                        <div id="st-cpi-overall-card" class="px-4 py-2 bg-slate-950 border border-slate-800 rounded-xl text-right">
+                            <span class="text-[10px] text-slate-400 block">Overall Cumulative CPI</span>
+                            <span id="st-overall-cpi-val" class="font-extrabold font-mono-num text-xl text-indigo-400">0.00</span>
+                        </div>
+                    </div>
+
+                    <div id="st-prev-sems-accordion" class="space-y-4">
+                        <!-- Dynamic Previous Semesters Cards -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- STUDENT TAB 2: CURRENT BACKLOGS SECTION -->
+            <div id="st-tab-backlogs" class="hidden space-y-6">
+                <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-sm">
+                    <div class="flex items-center justify-between pb-4 mb-4 border-b border-slate-800">
+                        <div>
+                            <h3 class="font-bold text-lg text-white">Current Active Backlogs</h3>
+                            <p class="text-xs text-slate-400">List of pending backlog subjects from previous semesters requiring remediation exam.</p>
+                        </div>
+                        <span id="st-backlog-summary-badge" class="px-3 py-1 rounded-full text-xs font-bold bg-amber-500/20 text-amber-400 border border-amber-500/30">0 Backlogs</span>
+                    </div>
+
+                    <div id="st-backlog-list-container" class="space-y-3">
+                        <!-- Dynamic Backlog cards -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- STUDENT TAB 3: SPI & ESE TARGET PREDICTOR -->
+            <div id="st-tab-calculator" class="hidden space-y-6">
+                <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-sm">
+                    <div class="flex flex-col md:flex-row md:items-center justify-between pb-4 mb-4 border-b border-slate-800 gap-4">
+                        <div>
+                            <h3 class="font-bold text-lg text-white">GTU SPI & ESE Target Predictor</h3>
+                            <p class="text-xs text-slate-400">Estimate minimum required End-Sem Exam (70 Marks) scores based on your Mid-Sem and Internal scores.</p>
+                        </div>
+                        <div class="flex items-center space-x-3 bg-slate-950 px-4 py-2 rounded-xl border border-slate-800">
+                            <span class="text-xs text-slate-400">Projected SPI:</span>
+                            <span id="st-calc-projected-spi" class="font-bold font-mono-num text-xl text-gtu-400">0.00</span>
+                        </div>
+                    </div>
+
+                    <div id="st-calc-subjects-list" class="space-y-3">
+                        <!-- Dynamic estimator cards -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- STUDENT TAB 4: EXAM & RE-ASSESSMENT FORMS -->
+            <div id="st-tab-forms" class="hidden space-y-6">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+
+                    <!-- Regular GTU Exam Form -->
+                    <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-sm flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-center justify-between mb-4">
+                                <div>
+                                    <span id="st-reg-form-badge" class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">Open</span>
+                                    <h3 class="font-bold text-lg text-white mt-1">Regular Exam Form</h3>
+                                </div>
+                                <div class="text-right">
+                                    <p class="text-[11px] text-slate-400">Deadline</p>
+                                    <p id="st-reg-deadline" class="text-xs font-semibold text-amber-400">--</p>
+                                </div>
+                            </div>
+                            <p class="text-xs text-slate-300 mb-4">Select all active courses for the upcoming GTU End-Sem Examinations.</p>
+
+                            <div id="st-reg-submitted-banner" class="hidden mb-4 p-3 bg-emerald-500/10 border border-emerald-500/30 rounded-xl text-xs text-emerald-300 flex items-center justify-between">
+                                <span><i class="fas fa-check-circle mr-1.5"></i> Regular Exam Form Submitted</span>
+                                <button onclick="printExamFormReceipt('regular')" class="text-[11px] underline font-semibold text-white">Print Receipt</button>
+                            </div>
+
+                            <form onsubmit="submitRegularExamForm(event)" class="space-y-3">
+                                <label class="text-xs font-semibold text-slate-300 block mb-1">Select Appearing Courses:</label>
+                                <div id="st-reg-subjects-checkboxes" class="space-y-2 max-h-48 overflow-y-auto bg-slate-950 p-3 rounded-xl border border-slate-800">
+                                    <!-- Dynamic subject checkboxes -->
+                                </div>
+
+                                <div class="pt-3 border-t border-slate-800 flex items-center justify-between text-xs font-semibold text-slate-200">
+                                    <span>Regular Exam Fee Total:</span>
+                                    <span id="st-reg-fee-total" class="font-mono-num text-base text-gtu-400">₹0</span>
+                                </div>
+
+                                <button id="st-reg-submit-btn" type="submit" class="w-full py-2.5 bg-gtu-600 hover:bg-gtu-500 text-white rounded-xl text-xs font-semibold transition shadow-md">
+                                    Submit Regular Exam Form
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- Re-Assessment Form -->
+                    <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-sm flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-center justify-between mb-4">
+                                <div>
+                                    <span id="st-reass-form-badge" class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">Open</span>
+                                    <h3 class="font-bold text-lg text-white mt-1">Re-Assessment Form</h3>
+                                </div>
+                                <div class="text-right">
+                                    <p class="text-[11px] text-slate-400">Deadline</p>
+                                    <p id="st-reass-deadline" class="text-xs font-semibold text-amber-400">--</p>
+                                </div>
+                            </div>
+                            <p class="text-xs text-slate-300 mb-4">Apply for GTU paper re-checking or answer sheet re-assessment.</p>
+
+                            <div id="st-reass-submitted-banner" class="hidden mb-4 p-3 bg-emerald-500/10 border border-emerald-500/30 rounded-xl text-xs text-emerald-300 flex items-center justify-between">
+                                <span><i class="fas fa-clock mr-1.5"></i> Re-assessment request submitted.</span>
+                                <button onclick="printExamFormReceipt('reassessment')" class="text-[11px] underline font-semibold text-white">Print Receipt</button>
+                            </div>
+
+                            <form onsubmit="submitReassessmentForm(event)" class="space-y-3">
+                                <div>
+                                    <label class="text-xs font-semibold text-slate-300 block mb-1">Select Subject for Re-Assessment:</label>
+                                    <select id="st-reass-subject-select" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-gtu-500">
+                                        <!-- Populated dynamically -->
+                                    </select>
+                                </div>
+
+                                <div>
+                                    <label class="text-xs font-semibold text-slate-300 block mb-1">Application Type:</label>
+                                    <select id="st-reass-type-select" onchange="calculateReassessmentFee()" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-gtu-500">
+                                        <option value="reassessment">Re-assessment (Answer Sheet Review)</option>
+                                        <option value="rechecking">Re-checking (Total Marks Verification)</option>
+                                    </select>
+                                </div>
+
+                                <div>
+                                    <label class="text-xs font-semibold text-slate-300 block mb-1">Reason / Remarks:</label>
+                                    <textarea id="st-reass-reason" rows="2" placeholder="Briefly state reason for re-assessment..." class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-gtu-500"></textarea>
+                                </div>
+
+                                <div class="pt-3 border-t border-slate-800 flex items-center justify-between text-xs font-semibold text-slate-200">
+                                    <span>Re-assessment Fee Total:</span>
+                                    <span id="st-reass-fee-total" class="font-mono-num text-base text-amber-400">₹250</span>
+                                </div>
+
+                                <button id="st-reass-submit-btn" type="submit" class="w-full py-2.5 bg-amber-600 hover:bg-amber-500 text-white rounded-xl text-xs font-semibold transition shadow-md">
+                                    Submit Re-Assessment Request
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- STUDENT TAB 5: NOTIFICATIONS INBOX -->
+            <div id="st-tab-inbox" class="hidden space-y-4">
+                <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-sm">
+                    <div class="flex items-center justify-between mb-4 border-b border-slate-800 pb-3">
+                        <div>
+                            <h3 class="font-bold text-lg text-white">Notifications Inbox</h3>
+                            <p class="text-xs text-slate-400">Personalized notifications for low marks, attendance alerts, and GTU deadlines</p>
+                        </div>
+                        <button onclick="markAllNotificationsRead()" class="text-xs text-gtu-400 hover:underline">Mark all as read</button>
+                    </div>
+
+                    <div id="st-notifications-container" class="space-y-3">
+                        <!-- Dynamic notifications -->
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- ================= FACULTY / ADMIN BACK-END VIEW ================= -->
+        <!-- NEVER ACCESSIBLE OR VISIBLE TO STUDENTS -->
+        <div id="faculty-backend-view" class="hidden space-y-6">
+
+            <!-- Back-end Control Header Banner -->
+            <div class="bg-gradient-to-r from-amber-950/40 via-slate-900 to-slate-900 border border-amber-500/30 rounded-2xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-lg">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 rounded-xl bg-amber-500/20 border border-amber-500/40 text-amber-400 flex items-center justify-center text-lg">
+                        <i class="fas fa-user-shield"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-white text-base">GTU Faculty & Department Back-End Console</h3>
+                        <p class="text-xs text-slate-400">Manage student records, edit marks & backlogs, scan low scores, and publish forms</p>
+                    </div>
+                </div>
+                <button onclick="lockFacultyConsole()" class="px-3.5 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 rounded-xl text-xs font-semibold transition flex items-center space-x-1.5">
+                    <i class="fas fa-lock text-amber-400"></i>
+                    <span>Lock Console</span>
+                </button>
+            </div>
+
+            <!-- Faculty Tabs -->
+            <div class="flex border-b border-slate-800 space-x-2 pb-2">
+                <button onclick="switchFacultyTab('roster')" id="fac-tab-btn-roster" class="fac-tab-btn active px-4 py-2 rounded-xl text-xs font-semibold transition bg-amber-600 text-white">
+                    <i class="fas fa-users-gear mr-1.5"></i>Roster, Marks & Backlogs
+                </button>
+                <button onclick="switchFacultyTab('forms')" id="fac-tab-btn-forms" class="fac-tab-btn px-4 py-2 rounded-xl text-xs font-semibold transition text-slate-400 hover:bg-slate-800">
+                    <i class="fas fa-file-signature mr-1.5"></i>Exam Forms Management
+                </button>
+                <button onclick="switchFacultyTab('notifications')" id="fac-tab-btn-notifications" class="fac-tab-btn px-4 py-2 rounded-xl text-xs font-semibold transition text-slate-400 hover:bg-slate-800">
+                    <i class="fas fa-paper-plane mr-1.5"></i>Dispatch & Auto Scanner
+                </button>
+            </div>
+
+            <!-- FACULTY TAB 1: ROSTER & MARKS ENTRY -->
+            <div id="fac-tab-roster" class="space-y-4">
+                <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-sm">
+                    <div class="flex flex-col sm:flex-row items-center justify-between gap-3 mb-4">
+                        <div class="relative w-full sm:w-72">
+                            <i class="fas fa-search absolute left-3 top-2.5 text-slate-400 text-xs"></i>
+                            <input type="text" id="fac-search-input" onkeyup="filterFacultyRoster()" placeholder="Search enrollment or student name..." class="w-full bg-slate-950 border border-slate-800 rounded-xl pl-8 pr-3 py-1.5 text-xs text-white focus:outline-none focus:border-amber-500">
+                        </div>
+                        <button onclick="openAddStudentModal()" class="px-3.5 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-semibold transition flex items-center space-x-1.5 shadow">
+                            <i class="fas fa-user-plus"></i>
+                            <span>Add New Student</span>
+                        </button>
+                    </div>
+
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-xs text-slate-300">
+                            <thead class="bg-slate-950 text-slate-400 uppercase font-semibold border-b border-slate-800">
+                                <tr>
+                                    <th class="px-3 py-3">Enrollment</th>
+                                    <th class="px-3 py-3">Student Name</th>
+                                    <th class="px-3 py-3">Branch / Sem</th>
+                                    <th class="px-3 py-3 text-center">Attendance</th>
+                                    <th class="px-3 py-3 text-center">Active Backlogs</th>
+                                    <th class="px-3 py-3 text-center">Calculated SPI</th>
+                                    <th class="px-3 py-3 text-center">Risk Status</th>
+                                    <th class="px-3 py-3 text-right">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="fac-roster-tbody" class="divide-y divide-slate-800/60">
+                                <!-- Dynamic Roster Rows -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- FACULTY TAB 2: EXAM FORMS MANAGEMENT -->
+            <div id="fac-tab-forms" class="hidden space-y-6">
+                <!-- Form Settings Panel -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-sm space-y-3">
+                        <div class="flex items-center justify-between">
+                            <h4 class="font-bold text-white text-sm">Regular Exam Form Controls</h4>
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" id="fac-reg-toggle-open" onchange="toggleFormConfig('regular')" class="sr-only peer" checked>
+                                <div class="w-9 h-5 bg-slate-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-emerald-500"></div>
+                            </label>
+                        </div>
+                        <div class="grid grid-cols-2 gap-3 text-xs">
+                            <div>
+                                <label class="text-slate-400 block mb-1">Deadline Date:</label>
+                                <input type="date" id="fac-reg-deadline-input" onchange="updateFormDeadline('regular', this.value)" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-1.5 text-white">
+                            </div>
+                            <div>
+                                <label class="text-slate-400 block mb-1">Base Fee (₹):</label>
+                                <input type="number" id="fac-reg-fee-input" onchange="updateFormFee('regular', this.value)" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-1.5 text-white">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-sm space-y-3">
+                        <div class="flex items-center justify-between">
+                            <h4 class="font-bold text-white text-sm">Re-Assessment Form Controls</h4>
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" id="fac-reass-toggle-open" onchange="toggleFormConfig('reassessment')" class="sr-only peer" checked>
+                                <div class="w-9 h-5 bg-slate-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-emerald-500"></div>
+                            </label>
+                        </div>
+                        <div class="grid grid-cols-2 gap-3 text-xs">
+                            <div>
+                                <label class="text-slate-400 block mb-1">Deadline Date:</label>
+                                <input type="date" id="fac-reass-deadline-input" onchange="updateFormDeadline('reassessment', this.value)" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-1.5 text-white">
+                            </div>
+                            <div>
+                                <label class="text-slate-400 block mb-1">Fee Per Subject (₹):</label>
+                                <input type="number" id="fac-reass-fee-input" onchange="updateFormFee('reassessment', this.value)" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-1.5 text-white">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Submissions Review Desk -->
+                <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-sm space-y-3">
+                    <h4 class="font-bold text-white text-sm">Student Exam Applications Log</h4>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-xs text-slate-300">
+                            <thead class="bg-slate-950 text-slate-400 uppercase font-semibold border-b border-slate-800">
+                                <tr>
+                                    <th class="px-3 py-2.5">Date</th>
+                                    <th class="px-3 py-2.5">Enrollment</th>
+                                    <th class="px-3 py-2.5">Form Type</th>
+                                    <th class="px-3 py-2.5">Details</th>
+                                    <th class="px-3 py-2.5 text-center">Amount</th>
+                                    <th class="px-3 py-2.5 text-center">Status</th>
+                                    <th class="px-3 py-2.5 text-right">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="fac-forms-tbody" class="divide-y divide-slate-800/60">
+                                <!-- Dynamic form logs -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- FACULTY TAB 3: NOTIFICATION DISPATCHER -->
+            <div id="fac-tab-notifications" class="hidden space-y-6">
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                    <!-- Manual Dispatch -->
+                    <div class="lg:col-span-5 bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-sm space-y-4">
+                        <h4 class="font-bold text-white text-sm">Dispatch Targeted Notification</h4>
+                        <form onsubmit="dispatchFacultyNotification(event)" class="space-y-3 text-xs">
+                            <div>
+                                <label class="text-slate-400 block mb-1">Target Recipient:</label>
+                                <select id="fac-dispatch-target" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-amber-500">
+                                    <option value="ALL">Broadcast to ALL Students</option>
+                                    <option value="AT_RISK">All High & Critical Risk Students</option>
+                                    <option value="LOW_ATT">Students with Attendance &lt; 75%</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="text-slate-400 block mb-1">Notification Category:</label>
+                                <select id="fac-dispatch-type" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-amber-500">
+                                    <option value="MARKS_WARNING">Low Mid-Sem Marks Alert</option>
+                                    <option value="ATTENDANCE_WARNING">Low Attendance Warning</option>
+                                    <option value="EXAM_DEADLINE">GTU Exam Form Reminder</option>
+                                    <option value="GENERAL">General Notice</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="text-slate-400 block mb-1">Title:</label>
+                                <input type="text" id="fac-dispatch-title" required placeholder="e.g. Urgent: Remedial Schedule" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-amber-500">
+                            </div>
+                            <div>
+                                <label class="text-slate-400 block mb-1">Message Detail:</label>
+                                <textarea id="fac-dispatch-msg" rows="3" required placeholder="Type guidance or deadline details..." class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-amber-500"></textarea>
+                            </div>
+                            <button type="submit" class="w-full py-2.5 bg-amber-600 hover:bg-amber-500 text-white rounded-xl font-semibold transition shadow">
+                                <i class="fas fa-paper-plane mr-1.5"></i> Dispatch Alert
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- Auto Scanner Engine -->
+                    <div class="lg:col-span-7 bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-sm space-y-4 flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-center justify-between mb-2">
+                                <h4 class="font-bold text-white text-sm">Automated Risk & Marks Scanner</h4>
+                                <button onclick="runAutoRiskScanAndNotify()" class="px-3.5 py-1.5 bg-gtu-600 hover:bg-gtu-500 text-white rounded-xl text-xs font-semibold transition flex items-center space-x-1.5 shadow">
+                                    <i class="fas fa-bolt"></i><span>Run Auto-Scan & Notify</span>
+                                </button>
+                            </div>
+                            <p class="text-xs text-slate-400">Scans all registered student records and automatically generates targeted warning notifications for students scoring &lt; 12/30 in Mid-Sem exams, attendance &lt; 75%, or active backlogs.</p>
+                        </div>
+
+                        <div id="fac-scan-log" class="bg-slate-950 border border-slate-800 rounded-xl p-3 h-52 overflow-y-auto font-mono text-[11px] text-slate-300 space-y-1">
+                            <p class="text-slate-500">// Auto-Risk scanner ready...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </main>
+
+    <!-- FOOTER WITH HIDDEN FACULTY TRIGGER -->
+    <footer class="border-t border-slate-800 py-4 bg-slate-950 text-center text-xs text-slate-500 relative">
+        <p>GTU Results Portal &copy; 2026. Gujarat Technological University Academic Network.</p>
+
+        <!-- SUBTLE KEY ICON TRIGGER FOR HIDDEN FACULTY ACCESS -->
+        <button onclick="openFacultyModalShortcut()" title="Faculty Access" class="absolute right-4 bottom-3 text-slate-800 hover:text-slate-600 transition text-sm">
+            <i class="fas fa-key"></i>
+        </button>
+    </footer>
+
+    <!-- ================= MODALS SECTION ================= -->
+
+    <!-- STUDENT LOGIN MODAL -->
+    <div id="login-modal" class="fixed inset-0 bg-slate-950/80 modal-blur z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-slate-900 border border-slate-800 rounded-3xl max-w-md w-full p-6 shadow-2xl relative">
+            <button onclick="closeStudentLoginModal()" class="absolute right-4 top-4 text-slate-400 hover:text-white">
+                <i class="fas fa-times"></i>
+            </button>
+
+            <h3 class="text-xl font-bold text-white mb-1">GTU Student Login</h3>
+            <p class="text-xs text-slate-400 mb-6">Enter your GTU enrollment credentials</p>
+
+            <form id="auth-student-form" onsubmit="handleStudentLogin(event)" class="space-y-4">
+                <div>
+                    <label class="text-xs font-semibold text-slate-300 block mb-1">Enrollment Number:</label>
+                    <input type="text" id="st-login-enroll" required placeholder="e.g. 210010107001" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-xs text-white focus:border-gtu-500 focus:outline-none">
+                </div>
+                <div>
+                    <div class="flex items-center justify-between mb-1">
+                        <label class="text-xs font-semibold text-slate-300">Password:</label>
+                        <button type="button" onclick="openResetPasswordModal()" class="text-[11px] text-gtu-400 hover:underline">Forgot Password?</button>
+                    </div>
+                    <input type="password" id="st-login-pass" required placeholder="••••••••" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-xs text-white focus:border-gtu-500 focus:outline-none">
+                </div>
+                <button type="submit" class="w-full py-2.5 bg-gtu-600 hover:bg-gtu-500 text-white rounded-xl text-xs font-semibold transition shadow-lg shadow-gtu-600/30">
+                    Login to Student Dashboard
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- HIDDEN FACULTY AUTH MODAL -->
+    <div id="faculty-auth-modal" class="fixed inset-0 bg-slate-950/80 modal-blur z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-slate-900 border border-amber-500/40 rounded-3xl max-w-md w-full p-6 shadow-2xl relative">
+            <button onclick="closeFacultyAuthModal()" class="absolute right-4 top-4 text-slate-400 hover:text-white">
+                <i class="fas fa-times"></i>
+            </button>
+
+            <div class="flex items-center space-x-3 mb-3">
+                <div class="w-10 h-10 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center text-lg">
+                    <i class="fas fa-user-shield"></i>
+                </div>
+                <div>
+                    <h3 class="text-lg font-bold text-white">Faculty Admin Console</h3>
+                    <p class="text-xs text-amber-400">Protected Department Access</p>
+                </div>
+            </div>
+
+            <form onsubmit="handleFacultyLogin(event)" class="space-y-4 mt-4">
+                <div>
+                    <label class="text-xs font-semibold text-slate-300 block mb-1">Faculty Passkey:</label>
+                    <input type="password" id="fac-login-pass" required placeholder="Enter passkey (admin123)" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-xs text-white focus:border-amber-500 focus:outline-none">
+                </div>
+                <button type="submit" class="w-full py-2.5 bg-amber-600 hover:bg-amber-500 text-white rounded-xl text-xs font-semibold transition shadow-lg shadow-amber-600/30">
+                    Unlock Faculty Back-End
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- PASSWORD RESET WITH VISUAL CAPTCHA MODAL -->
+    <div id="reset-pass-modal" class="fixed inset-0 bg-slate-950/80 modal-blur z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-slate-900 border border-slate-800 rounded-3xl max-w-md w-full p-6 shadow-2xl relative">
+            <button onclick="closeResetPasswordModal()" class="absolute right-4 top-4 text-slate-400 hover:text-white">
+                <i class="fas fa-times"></i>
+            </button>
+
+            <h3 class="text-lg font-bold text-white mb-1">Reset Student Password</h3>
+            <p class="text-xs text-slate-400 mb-4">Validate enrollment and CAPTCHA to set a new password</p>
+
+            <form onsubmit="handlePasswordResetSubmit(event)" class="space-y-3 text-xs">
+                <div>
+                    <label class="text-slate-300 block mb-1">GTU Enrollment Number:</label>
+                    <input type="text" id="reset-enroll" required placeholder="e.g. 210010107001" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-white focus:border-gtu-500 focus:outline-none">
+                </div>
+
+                <div>
+                    <label class="text-slate-300 block mb-1">New Password:</label>
+                    <input type="password" id="reset-new-pass" required placeholder="At least 6 characters" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-white focus:border-gtu-500 focus:outline-none">
+                </div>
+
+                <!-- Canvas Visual Captcha -->
+                <div>
+                    <label class="text-slate-300 block mb-1">CAPTCHA Security Code:</label>
+                    <div class="flex items-center space-x-3 mb-2">
+                        <canvas id="captcha-canvas" width="160" height="42" class="captcha-canvas"></canvas>
+                        <button type="button" onclick="drawCaptcha()" class="p-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl text-xs transition" title="Refresh CAPTCHA">
+                            <i class="fas fa-rotate"></i>
+                        </button>
+                    </div>
+                    <input type="text" id="reset-captcha-input" required placeholder="Enter CAPTCHA text shown above" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-white font-mono uppercase focus:border-gtu-500 focus:outline-none">
+                </div>
+
+                <button type="submit" class="w-full py-2.5 bg-gtu-600 hover:bg-gtu-500 text-white rounded-xl font-semibold transition shadow-md mt-2">
+                    Verify CAPTCHA & Update Password
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- FACULTY EDIT MARKS & BACKLOGS MODAL -->
+    <div id="fac-edit-marks-modal" class="fixed inset-0 bg-slate-950/80 modal-blur z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-slate-900 border border-slate-800 rounded-3xl max-w-lg w-full p-6 shadow-2xl relative max-h-[90vh] overflow-y-auto">
+            <button onclick="closeEditMarksModal()" class="absolute right-4 top-4 text-slate-400 hover:text-white">
+                <i class="fas fa-times"></i>
+            </button>
+
+            <h3 class="text-lg font-bold text-white mb-1">Edit Student Marks & Backlogs</h3>
+            <p id="fac-edit-student-title" class="text-xs text-amber-400 mb-4">Enrollment: --</p>
+
+            <form onsubmit="saveFacultyMarksEdit(event)" class="space-y-4">
+                <input type="hidden" id="fac-edit-student-id">
+
+                <div>
+                    <label class="text-xs text-slate-400 block mb-1">Attendance (%):</label>
+                    <input type="number" id="fac-edit-att" min="0" max="100" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-1.5 text-xs text-white">
+                </div>
+
+                <!-- Backlogs Management -->
+                <div class="border-t border-slate-800 pt-3">
+                    <div class="flex items-center justify-between mb-2">
+                        <h4 class="text-xs font-semibold text-amber-400">Current Backlogs Management:</h4>
+                        <button type="button" onclick="addNewBacklogRowToModal()" class="text-[11px] text-gtu-400 hover:underline">+ Add Backlog Subject</button>
+                    </div>
+                    <div id="fac-edit-backlogs-list" class="space-y-2">
+                        <!-- Dynamic Backlog Rows -->
+                    </div>
+                </div>
+
+                <div class="border-t border-slate-800 pt-3">
+                    <h4 class="text-xs font-semibold text-slate-200 mb-2">Subject Mid-Sem Marks (30 Marks):</h4>
+                    <div id="fac-edit-subjects-inputs" class="space-y-2">
+                        <!-- Dynamic subject inputs -->
+                    </div>
+                </div>
+
+                <button type="submit" class="w-full py-2.5 bg-amber-600 hover:bg-amber-500 text-white rounded-xl text-xs font-semibold transition shadow">
+                    Save Updated Student Record
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- FACULTY ADD STUDENT MODAL -->
+    <div id="fac-add-student-modal" class="fixed inset-0 bg-slate-950/80 modal-blur z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-slate-900 border border-slate-800 rounded-3xl max-w-md w-full p-6 shadow-2xl relative">
+            <button onclick="closeAddStudentModal()" class="absolute right-4 top-4 text-slate-400 hover:text-white">
+                <i class="fas fa-times"></i>
+            </button>
+
+            <h3 class="text-lg font-bold text-white mb-1">Add New Student Record</h3>
+            <p class="text-xs text-slate-400 mb-4">Register new student in GTU database</p>
+
+            <form onsubmit="saveNewStudent(event)" class="space-y-3 text-xs">
+                <div>
+                    <label class="text-slate-300 block mb-1">Enrollment Number:</label>
+                    <input type="text" id="add-st-enroll" required placeholder="e.g. 210010107004" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-white">
+                </div>
+                <div>
+                    <label class="text-slate-300 block mb-1">Student Full Name:</label>
+                    <input type="text" id="add-st-name" required placeholder="e.g. Krunal Vora" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-white">
+                </div>
+                <div>
+                    <label class="text-slate-300 block mb-1">Initial Password:</label>
+                    <input type="text" id="add-st-pass" required value="pass123" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-white">
+                </div>
+                <div class="grid grid-cols-2 gap-2">
+                    <div>
+                        <label class="text-slate-300 block mb-1">Branch:</label>
+                        <input type="text" id="add-st-branch" value="Computer Eng." class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-white">
+                    </div>
+                    <div>
+                        <label class="text-slate-300 block mb-1">Semester:</label>
+                        <input type="number" id="add-st-sem" value="6" min="1" max="8" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-white">
+                    </div>
+                </div>
+                <div>
+                    <label class="text-slate-300 block mb-1">Initial Attendance (%):</label>
+                    <input type="number" id="add-st-att" value="85" min="0" max="100" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-white">
+                </div>
+                <button type="submit" class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl font-semibold transition shadow mt-2">
+                    Add Student
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- JAVASCRIPT LOGIC ENGINE -->
+    <script>
+        // ================= STATE & INITIAL DATA =================
+        const DEFAULT_STUDENTS = [
+            {
+                enrollment: "210010107001",
+                password: "pass123",
+                name: "Aarav Patel",
+                branch: "Computer Eng.",
+                semester: 6,
+                attendance: 86,
+                backlogsList: [],
+                prevSemesters: [
+                    { sem: 1, spi: 8.20, cpi: 8.20, totalCredits: 20, status: "PASS", subjects: [{ code: "3110005", name: "Basic Electrical Eng.", credits: 4, grade: "AA", points: 10 }, { code: "3110007", name: "Environmental Sciences", credits: 3, grade: "AB", points: 9 }, { code: "3110012", name: "Workshops", credits: 3, grade: "BB", points: 8 }] },
+                    { sem: 2, spi: 8.45, cpi: 8.32, totalCredits: 22, status: "PASS", subjects: [{ code: "3120015", name: "Maths-2", credits: 5, grade: "AA", points: 10 }, { code: "3120019", name: "Basic Electronics", credits: 4, grade: "AB", points: 9 }] },
+                    { sem: 3, spi: 8.10, cpi: 8.25, totalCredits: 23, status: "PASS", subjects: [{ code: "3130006", name: "Data Structures", credits: 5, grade: "AB", points: 9 }, { code: "3130007", name: "DBMS", credits: 5, grade: "BB", points: 8 }] },
+                    { sem: 4, spi: 8.60, cpi: 8.34, totalCredits: 22, status: "PASS", subjects: [{ code: "3140705", name: "OOP with Java", credits: 4, grade: "AA", points: 10 }, { code: "3140708", name: "Discrete Maths", credits: 4, grade: "AB", points: 9 }] },
+                    { sem: 5, spi: 8.30, cpi: 8.33, totalCredits: 24, status: "PASS", subjects: [{ code: "3150703", name: "ADA", credits: 5, grade: "AB", points: 9 }, { code: "3150709", name: "Professional Ethics", credits: 2, grade: "AA", points: 10 }] }
+                ],
+                subjects: [
+                    { code: "3160704", name: "Software Engineering", credits: 4, midSem: 26, internal: 22, targetEse: 35 },
+                    { code: "3160707", name: "Advanced Java Technology", credits: 5, midSem: 24, internal: 21, targetEse: 35 },
+                    { code: "3160712", name: "Microprocessor & Interfacing", credits: 4, midSem: 22, internal: 19, targetEse: 35 },
+                    { code: "3160713", name: "Web Data Management", credits: 4, midSem: 28, internal: 24, targetEse: 35 },
+                    { code: "3160714", name: "Data Mining & BI", credits: 3, midSem: 25, internal: 22, targetEse: 35 }
+                ]
+            },
+            {
+                enrollment: "210010107002",
+                password: "pass123",
+                name: "Priya Sharma",
+                branch: "Computer Eng.",
+                semester: 6,
+                attendance: 62,
+                backlogsList: [
+                    { code: "3150703", name: "Analysis & Design of Algorithms", semester: 5, credits: 4, type: "Theory" },
+                    { code: "3140705", name: "Object Oriented Programming", semester: 4, credits: 3, type: "Mid-Sem" }
+                ],
+                prevSemesters: [
+                    { sem: 1, spi: 7.10, cpi: 7.10, totalCredits: 20, status: "PASS", subjects: [{ code: "3110005", name: "Basic Electrical Eng.", credits: 4, grade: "BB", points: 8 }] },
+                    { sem: 2, spi: 6.80, cpi: 6.95, totalCredits: 22, status: "PASS", subjects: [{ code: "3120015", name: "Maths-2", credits: 5, grade: "BC", points: 7 }] },
+                    { sem: 3, spi: 6.20, cpi: 6.70, totalCredits: 23, status: "PASS", subjects: [{ code: "3130006", name: "Data Structures", credits: 5, grade: "CC", points: 6 }] },
+                    { sem: 4, spi: 5.40, cpi: 6.38, totalCredits: 22, status: "BACKLOG", subjects: [{ code: "3140705", name: "OOP with Java", credits: 3, grade: "FF", points: 0 }] },
+                    { sem: 5, spi: 5.10, cpi: 6.12, totalCredits: 24, status: "BACKLOG", subjects: [{ code: "3150703", name: "ADA", credits: 4, grade: "FF", points: 0 }] }
+                ],
+                subjects: [
+                    { code: "3160704", name: "Software Engineering", credits: 4, midSem: 10, internal: 11, targetEse: 48 },
+                    { code: "3160707", name: "Advanced Java Technology", credits: 5, midSem: 11, internal: 12, targetEse: 45 },
+                    { code: "3160712", name: "Microprocessor & Interfacing", credits: 4, midSem: 14, internal: 15, targetEse: 38 },
+                    { code: "3160713", name: "Web Data Management", credits: 4, midSem: 16, internal: 17, targetEse: 35 },
+                    { code: "3160714", name: "Data Mining & BI", credits: 3, midSem: 09, internal: 10, targetEse: 50 }
+                ]
+            },
+            {
+                enrollment: "210010107003",
+                password: "pass123",
+                name: "Rohan Mehta",
+                branch: "Computer Eng.",
+                semester: 6,
+                attendance: 78,
+                backlogsList: [
+                    { code: "3150709", name: "Professional Ethics", semester: 5, credits: 2, type: "Practical" }
+                ],
+                prevSemesters: [
+                    { sem: 1, spi: 7.80, cpi: 7.80, totalCredits: 20, status: "PASS", subjects: [{ code: "3110005", name: "Basic Electrical Eng.", credits: 4, grade: "AB", points: 9 }] },
+                    { sem: 2, spi: 7.90, cpi: 7.85, totalCredits: 22, status: "PASS", subjects: [{ code: "3120015", name: "Maths-2", credits: 5, grade: "BB", points: 8 }] },
+                    { sem: 3, spi: 7.50, cpi: 7.73, totalCredits: 23, status: "PASS", subjects: [{ code: "3130006", name: "Data Structures", credits: 5, grade: "BB", points: 8 }] },
+                    { sem: 4, spi: 7.60, cpi: 7.70, totalCredits: 22, status: "PASS", subjects: [{ code: "3140705", name: "OOP with Java", credits: 4, grade: "AB", points: 9 }] },
+                    { sem: 5, spi: 7.20, cpi: 7.60, totalCredits: 24, status: "BACKLOG", subjects: [{ code: "3150709", name: "Professional Ethics", credits: 2, grade: "FF", points: 0 }] }
+                ],
+                subjects: [
+                    { code: "3160704", name: "Software Engineering", credits: 4, midSem: 18, internal: 17, targetEse: 35 },
+                    { code: "3160707", name: "Advanced Java Technology", credits: 5, midSem: 19, internal: 18, targetEse: 35 },
+                    { code: "3160712", name: "Microprocessor & Interfacing", credits: 4, midSem: 17, internal: 16, targetEse: 35 },
+                    { code: "3160713", name: "Web Data Management", credits: 4, midSem: 21, internal: 20, targetEse: 35 },
+                    { code: "3160714", name: "Data Mining & BI", credits: 3, midSem: 18, internal: 16, targetEse: 35 }
+                ]
+            }
+        ];
+
+        let studentsData = JSON.parse(localStorage.getItem('gtu_students_db')) || DEFAULT_STUDENTS;
+        let notificationsData = JSON.parse(localStorage.getItem('gtu_notifications_db')) || [
+            { id: 1, target: "210010107002", title: "Low Attendance Warning", message: "Your attendance is 62% (below 75% threshold). Risk of GTU exam detention.", date: "2026-10-25", type: "ATTENDANCE_WARNING", read: false },
+            { id: 2, target: "210010107002", title: "Low Mid-Sem Marks Alert", message: "Mid-Sem score in Software Engineering is 10/30. Consult course faculty.", date: "2026-10-27", type: "MARKS_WARNING", read: false },
+            { id: 3, target: "ALL", title: "GTU Regular Exam Form Announcement", message: "Regular Exam Forms for Sem 6 are active. Submit before 2026-11-15.", date: "2026-10-29", type: "EXAM_DEADLINE", read: false }
+        ];
+
+        let formConfig = JSON.parse(localStorage.getItem('gtu_form_config_db')) || {
+            regularOpen: true,
+            regularDeadline: "2026-11-15",
+            regularFee: 500,
+            reassOpen: true,
+            reassDeadline: "2026-11-20",
+            reassFee: 250
+        };
+
+        let submittedForms = JSON.parse(localStorage.getItem('gtu_forms_db')) || [];
+
+        let currentRole = null; // 'student' | 'faculty' | null
+        let currentStudentEnrollment = null;
+        let activeCaptchaText = "";
+        let studentChartInstance = null;
+
+        function saveState() {
+            localStorage.setItem('gtu_students_db', JSON.stringify(studentsData));
+            localStorage.setItem('gtu_notifications_db', JSON.stringify(notificationsData));
+            localStorage.setItem('gtu_form_config_db', JSON.stringify(formConfig));
+            localStorage.setItem('gtu_forms_db', JSON.stringify(submittedForms));
+        }
+
+        // HIDDEN FACULTY SHORTCUT KEY (Ctrl + Shift + A)
+        document.addEventListener('keydown', function(e) {
+            if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === 'a') {
+                e.preventDefault();
+                openFacultyModalShortcut();
+            }
+        });
+
+        function openFacultyModalShortcut() {
+            document.getElementById('faculty-auth-modal').classList.remove('hidden');
+        }
+
+        function closeFacultyAuthModal() {
+            document.getElementById('faculty-auth-modal').classList.add('hidden');
+        }
+
+        // ================= APPLICATION INIT =================
+        window.onload = function() {
+            document.getElementById('fac-reg-toggle-open').checked = formConfig.regularOpen;
+            document.getElementById('fac-reg-deadline-input').value = formConfig.regularDeadline;
+            document.getElementById('fac-reg-fee-input').value = formConfig.regularFee;
+            document.getElementById('fac-reass-toggle-open').checked = formConfig.reassOpen;
+            document.getElementById('fac-reass-deadline-input').value = formConfig.reassDeadline;
+            document.getElementById('fac-reass-fee-input').value = formConfig.reassFee;
+
+            showLandingView();
+        };
+
+        function showLandingView() {
+            currentRole = null;
+            currentStudentEnrollment = null;
+
+            document.getElementById('guest-landing-view').classList.remove('hidden');
+            document.getElementById('student-portal-view').classList.add('hidden');
+            document.getElementById('faculty-backend-view').classList.add('hidden');
+
+            document.getElementById('header-role-badge').innerText = 'Student Portal';
+            document.getElementById('header-role-badge').className = 'px-2 py-0.5 text-[10px] font-semibold rounded-full bg-slate-800 text-slate-300 border border-slate-700';
+
+            document.getElementById('header-user-info').classList.add('hidden');
+            document.getElementById('header-reset-pass-btn').classList.add('hidden');
+            document.getElementById('auth-btn-text').innerText = 'Student Login';
+            document.getElementById('auth-action-btn').onclick = openStudentLoginModal;
+        }
+
+        function openStudentLoginModal() {
+            document.getElementById('login-modal').classList.remove('hidden');
+        }
+
+        function closeStudentLoginModal() {
+            document.getElementById('login-modal').classList.add('hidden');
+        }
+
+        function handleStudentLogin(e) {
+            e.preventDefault();
+            const enroll = document.getElementById('st-login-enroll').value.trim();
+            const pass = document.getElementById('st-login-pass').value.trim();
+
+            const student = studentsData.find(s => s.enrollment === enroll && s.password === pass);
+
+            if(student) {
+                closeStudentLoginModal();
+                currentRole = 'student';
+                currentStudentEnrollment = student.enrollment;
+                loadStudentPortal(student);
+                Swal.fire({ title: `Welcome back, ${student.name}!`, text: 'Logged into GTU Student Portal', icon: 'success', timer: 1500, showConfirmButton: false, background: '#0f172a', color: '#fff' });
+            } else {
+                Swal.fire({ title: 'Authentication Failed', text: 'Invalid Enrollment Number or Password.', icon: 'error', background: '#0f172a', color: '#fff' });
+            }
+        }
+
+        function handleFacultyLogin(e) {
+            e.preventDefault();
+            const pass = document.getElementById('fac-login-pass').value.trim();
+
+            if(pass === "admin123") {
+                closeFacultyAuthModal();
+                currentRole = 'faculty';
+                currentStudentEnrollment = null;
+                loadFacultyPortal();
+                Swal.fire({ title: 'Faculty Access Unlocked', text: 'Entered GTU Department Console', icon: 'success', timer: 1500, showConfirmButton: false, background: '#0f172a', color: '#fff' });
+            } else {
+                Swal.fire({ title: 'Access Denied', text: 'Incorrect Faculty Passkey.', icon: 'error', background: '#0f172a', color: '#fff' });
+            }
+        }
+
+        // ================= CANVAS CAPTCHA & PASSWORD RESET =================
+        function drawCaptcha() {
+            const canvas = document.getElementById('captcha-canvas');
+            if(!canvas) return;
+            const ctx = canvas.getContext('2d');
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            const chars = "23456789ABCDEFGHJKLMNPQRSTUVWXYZ";
+            let code = "";
+            for (let i = 0; i < 5; i++) {
+                code += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            activeCaptchaText = code;
+
+            // Background distortion lines
+            ctx.fillStyle = "#0f172a";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            for (let i = 0; i < 5; i++) {
+                ctx.strokeStyle = `rgba(245, 158, 11, ${0.2 + Math.random() * 0.3})`;
+                ctx.beginPath();
+                ctx.moveTo(Math.random() * canvas.width, Math.random() * canvas.height);
+                ctx.lineTo(Math.random() * canvas.width, Math.random() * canvas.height);
+                ctx.stroke();
+            }
+
+            // Text
+            ctx.font = "bold 22px 'JetBrains Mono', monospace";
+            ctx.fillStyle = "#f59e0b";
+            ctx.textBaseline = "middle";
+            for (let i = 0; i < code.length; i++) {
+                ctx.save();
+                ctx.translate(20 + i * 26, 21);
+                ctx.rotate((Math.random() - 0.5) * 0.4);
+                ctx.fillText(code[i], 0, 0);
+                ctx.restore();
+            }
+        }
+
+        function openResetPasswordModal() {
+            closeStudentLoginModal();
+            document.getElementById('reset-pass-modal').classList.remove('hidden');
+            setTimeout(drawCaptcha, 100);
+        }
+
+        function closeResetPasswordModal() {
+            document.getElementById('reset-pass-modal').classList.add('hidden');
+        }
+
+        function handlePasswordResetSubmit(e) {
+            e.preventDefault();
+            const enroll = document.getElementById('reset-enroll').value.trim();
+            const newPass = document.getElementById('reset-new-pass').value.trim();
+            const userCaptcha = document.getElementById('reset-captcha-input').value.trim().toUpperCase();
+
+            if (userCaptcha !== activeCaptchaText) {
+                Swal.fire({ title: 'Invalid CAPTCHA', text: 'Verification code does not match canvas image.', icon: 'error', background: '#0f172a', color: '#fff' });
+                drawCaptcha();
+                return;
+            }
+
+            const student = studentsData.find(s => s.enrollment === enroll);
+            if (!student) {
+                Swal.fire({ title: 'Student Not Found', text: 'No student record matches this enrollment number.', icon: 'error', background: '#0f172a', color: '#fff' });
+                return;
+            }
+
+            student.password = newPass;
+            saveState();
+            closeResetPasswordModal();
+            Swal.fire({ title: 'Password Reset Successful!', text: 'Your password has been updated. Please log in.', icon: 'success', background: '#0f172a', color: '#fff' });
+        }
+
+        // ================= STUDENT PORTAL LOGIC =================
+        function loadStudentPortal(student) {
+            document.getElementById('guest-landing-view').classList.add('hidden');
+            document.getElementById('faculty-backend-view').classList.add('hidden'); // STRICT ROLE ISOLATION
+            document.getElementById('student-portal-view').classList.remove('hidden');
+
+            document.getElementById('header-role-badge').innerText = 'Student View';
+            document.getElementById('header-role-badge').className = 'px-2 py-0.5 text-[10px] font-semibold rounded-full bg-gtu-600/30 text-gtu-300 border border-gtu-500/40';
+
+            document.getElementById('header-user-info').classList.remove('hidden');
+            document.getElementById('header-reset-pass-btn').classList.remove('hidden');
+            document.getElementById('header-user-name').innerText = student.name;
+            document.getElementById('header-user-enroll').innerText = `Enroll: ${student.enrollment}`;
+            document.getElementById('auth-btn-text').innerText = 'Logout';
+            document.getElementById('auth-action-btn').onclick = showLandingView;
+
+            renderStudentDashboard(student);
+            renderStudentBacklogs(student);
+            renderStudentCalculator(student);
+            renderStudentForms(student);
+            renderStudentNotifications(student);
+        }
+
+        function switchStudentTab(tab) {
+            ['dashboard', 'prevsems', 'backlogs', 'calculator', 'forms', 'inbox'].forEach(t => {
+                const tabEl = document.getElementById(`st-tab-${t}`);
+                const btnEl = document.getElementById(`st-tab-btn-${t}`);
+                if(tabEl) tabEl.classList.add('hidden');
+                if(btnEl) btnEl.className = "st-tab-btn px-4 py-2 rounded-xl text-xs font-semibold transition flex items-center space-x-2 whitespace-nowrap text-slate-400 hover:bg-slate-800";
+            });
+
+            const targetTab = document.getElementById(`st-tab-${tab}`);
+            const targetBtn = document.getElementById(`st-tab-btn-${tab}`);
+            if(targetTab) targetTab.classList.remove('hidden');
+            if(targetBtn) targetBtn.className = "st-tab-btn active px-4 py-2 rounded-xl text-xs font-semibold transition flex items-center space-x-2 whitespace-nowrap bg-gtu-600 text-white";
+
+            if(tab === 'prevsems') {
+                const student = studentsData.find(s => s.enrollment === currentStudentEnrollment);
+                if(student) renderStudentPrevSemesters(student);
+            }
+        }
+
+        function renderStudentPrevSemesters(student) {
+            const accordion = document.getElementById('st-prev-sems-accordion');
+            const cpiElem = document.getElementById('st-overall-cpi-val');
+            if(!accordion) return;
+
+            const prevSems = student.prevSemesters || [];
+            if(prevSems.length === 0) {
+                accordion.innerHTML = `<p class="text-xs text-slate-500 py-4 text-center">No previous semester records available.</p>`;
+                if(cpiElem) cpiElem.innerText = "0.00";
+                return;
+            }
+
+            let totalGradepoints = 0;
+            let totalCreditsSum = 0;
+
+            prevSems.forEach(s => {
+                totalGradepoints += (parseFloat(s.spi) * s.totalCredits);
+                totalCreditsSum += s.totalCredits;
+            });
+
+            const overallCPI = totalCreditsSum > 0 ? (totalGradepoints / totalCreditsSum).toFixed(2) : "0.00";
+            if(cpiElem) cpiElem.innerText = overallCPI;
+
+            accordion.innerHTML = prevSems.map(s => `
+                <div class="border border-slate-800 bg-slate-950 rounded-xl overflow-hidden">
+                    <div class="p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-2 bg-slate-900/60 cursor-pointer" onclick="this.nextElementSibling.classList.toggle('hidden')">
+                        <div class="flex items-center space-x-3">
+                            <span class="w-8 h-8 rounded-lg bg-indigo-600/20 text-indigo-400 border border-indigo-500/30 font-bold text-xs flex items-center justify-center">S${s.sem}</span>
+                            <div>
+                                <h4 class="font-bold text-sm text-white">Semester ${s.sem} Marksheet</h4>
+                                <p class="text-[11px] text-slate-400">Total Credits: ${s.totalCredits} | Status: <span class="font-semibold ${s.status === 'PASS' ? 'text-emerald-400' : 'text-red-400'}">${s.status}</span></p>
+                            </div>
+                        </div>
+                        <div class="flex items-center space-x-4">
+                            <div class="text-right">
+                                <span class="text-[10px] text-slate-400 block">SPI</span>
+                                <span class="font-bold font-mono-num text-gtu-400 text-sm">${s.spi}</span>
+                            </div>
+                            <i class="fas fa-chevron-down text-slate-500 text-xs"></i>
+                        </div>
+                    </div>
+                    <div class="p-4 border-t border-slate-800/80 space-y-2">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                            ${s.subjects.map(sub => `
+                                <div class="p-2.5 bg-slate-900 rounded-lg border border-slate-800 flex items-center justify-between text-xs">
+                                    <div>
+                                        <p class="font-semibold text-slate-200">${sub.name}</p>
+                                        <p class="text-[10px] text-slate-500">Code: ${sub.code} (${sub.credits} Credits)</p>
+                                    </div>
+                                    <div class="text-right">
+                                        <span class="px-2 py-0.5 rounded text-[10px] font-bold ${sub.grade === 'FF' ? 'bg-red-500/20 text-red-400 border border-red-500/30' : 'bg-slate-800 text-indigo-300'}">${sub.grade}</span>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function calculateSPI(subjects) {
+            let totalCredits = 0;
+            let totalPoints = 0;
+
+            subjects.forEach(s => {
+                let sum = s.midSem + s.internal;
+                let gradePoint = 0;
+                if(sum >= 42) gradePoint = 10;
+                else if(sum >= 37) gradePoint = 9;
+                else if(sum >= 32) gradePoint = 8;
+                else if(sum >= 27) gradePoint = 7;
+                else if(sum >= 22) gradePoint = 6;
+                else if(sum >= 18) gradePoint = 5;
+                else if(sum >= 15) gradePoint = 4;
+                else gradePoint = 0;
+
+                totalCredits += s.credits;
+                totalPoints += (s.credits * gradePoint);
+            });
+
+            return totalCredits > 0 ? (totalPoints / totalCredits).toFixed(2) : "0.00";
+        }
+
+        function renderStudentDashboard(student) {
+            const spi = calculateSPI(student.subjects);
+            const backlogsCount = (student.backlogsList || []).length;
+
+            const spiElem = document.getElementById('st-card-spi');
+            const attElem = document.getElementById('st-card-att');
+            const backlogsElem = document.getElementById('st-card-backlogs');
+            const semElem = document.getElementById('st-sem-badge');
+
+            if (spiElem) spiElem.innerText = spi;
+            if (attElem) attElem.innerText = `${student.attendance}%`;
+            if (backlogsElem) backlogsElem.innerText = backlogsCount;
+            if (semElem) semElem.innerText = student.semester;
+
+            // Risk Assessment Engine
+            const riskCard = document.getElementById('st-card-risk');
+            const warningBox = document.getElementById('st-risk-warning-box');
+            const warningTitle = document.getElementById('st-risk-warning-title');
+            const warningDesc = document.getElementById('st-risk-warning-desc');
+
+            let riskLevel = "LOW";
+            let recs = [];
+
+            if(student.attendance < 75 || parseFloat(spi) < 5.5 || backlogsCount >= 2) {
+                riskLevel = "CRITICAL";
+            } else if(student.attendance < 80 || parseFloat(spi) < 6.5 || backlogsCount > 0) {
+                riskLevel = "MODERATE";
+            }
+
+            if(student.attendance < 75) recs.push(`• Low Attendance (${student.attendance}%): Below GTU 75% limit. Meet HOD.`);
+            if(parseFloat(spi) < 6.0) recs.push(`• Low Estimated SPI (${spi}): Perform well in upcoming End-Sem exams.`);
+            if(backlogsCount > 0) recs.push(`• Active Backlogs (${backlogsCount}): Submit remedial exam form.`);
+
+            if(riskCard && warningBox && warningTitle && warningDesc) {
+                if(riskLevel === "CRITICAL") {
+                    riskCard.innerText = "CRITICAL RISK";
+                    riskCard.className = "text-xl font-bold mt-1 text-red-500";
+                    warningBox.className = "p-4 rounded-2xl border flex items-start space-x-4 bg-red-500/10 border-red-500/30 text-red-200";
+                    document.getElementById('st-risk-warning-icon').innerHTML = '<i class="fas fa-triangle-exclamation text-red-400"></i>';
+                    warningTitle.innerText = "Critical Academic Risk Advisory";
+                    warningDesc.innerText = "You have critical attendance shortfalls, low internal scores, or multiple backlogs.";
+                    warningBox.classList.remove('hidden');
+                } else if(riskLevel === "MODERATE") {
+                    riskCard.innerText = "MODERATE RISK";
+                    riskCard.className = "text-xl font-bold mt-1 text-amber-400";
+                    warningBox.className = "p-4 rounded-2xl border flex items-start space-x-4 bg-amber-500/10 border-amber-500/30 text-amber-200";
+                    document.getElementById('st-risk-warning-icon').innerHTML = '<i class="fas fa-exclamation-circle text-amber-400"></i>';
+                    warningTitle.innerText = "Moderate Academic Advisory";
+                    warningDesc.innerText = "Keep track of attendance and prepare well for upcoming End-Sem examinations.";
+                    warningBox.classList.remove('hidden');
+                } else {
+                    riskCard.innerText = "LOW RISK";
+                    riskCard.className = "text-xl font-bold mt-1 text-emerald-400";
+                    warningBox.classList.add('hidden');
+                }
+            }
+
+            const recsElem = document.getElementById('st-risk-warning-recs');
+            if (recsElem) recsElem.innerHTML = recs.join('<br>');
+
+            // Render Course list on dashboard
+            const subjectsList = document.getElementById('st-subjects-detail-list');
+            if (subjectsList) {
+                subjectsList.innerHTML = student.subjects.map(s => `
+                    <div class="p-3 bg-slate-950 rounded-xl border border-slate-800/80 flex items-center justify-between text-xs">
+                        <div>
+                            <h4 class="font-bold text-white">${s.name}</h4>
+                            <p class="text-[10px] text-slate-400">Code: ${s.code} | Credits: ${s.credits}</p>
+                        </div>
+                        <div class="text-right font-mono-num">
+                            <span class="text-slate-300 block">Mid: <strong class="text-white">${s.midSem}/30</strong></span>
+                            <span class="text-slate-400 text-[10px]">Target ESE: ${s.targetEse}/70</span>
+                        </div>
+                    </div>
+                `).join('');
+            }
+
+            renderStudentChart(student.subjects);
+        }
+
+        function renderStudentChart(subjects) {
+            const ctx = document.getElementById('st-performance-chart');
+            if(!ctx) return;
+
+            if (studentChartInstance) {
+                studentChartInstance.destroy();
+            }
+
+            studentChartInstance = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: subjects.map(s => s.name.length > 15 ? s.name.substring(0, 15) + '...' : s.name),
+                    datasets: [
+                        {
+                            label: 'Mid-Sem Marks (Out of 30)',
+                            data: subjects.map(s => s.midSem),
+                            backgroundColor: '#2563eb',
+                            borderRadius: 6
+                        },
+                        {
+                            label: 'Internal Marks (Out of 20)',
+                            data: subjects.map(s => s.internal),
+                            backgroundColor: '#10b981',
+                            borderRadius: 6
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { labels: { color: '#94a3b8', font: { size: 10 } } }
+                    },
+                    scales: {
+                        x: { ticks: { color: '#94a3b8', font: { size: 9 } }, grid: { display: false } },
+                        y: { max: 30, ticks: { color: '#94a3b8', font: { size: 10 } }, grid: { color: '#1e293b' } }
+                    }
+                }
+            });
+        }
+
+        function renderStudentBacklogs(student) {
+            const container = document.getElementById('st-backlog-list-container');
+            const badge = document.getElementById('st-backlog-summary-badge');
+            const countBadge = document.getElementById('st-backlog-badge-count');
+            const list = student.backlogsList || [];
+
+            if(list.length > 0) {
+                badge.innerText = `${list.length} Pending Backlog(s)`;
+                badge.className = "px-3 py-1 rounded-full text-xs font-bold bg-amber-500/20 text-amber-400 border border-amber-500/30";
+                countBadge.innerText = list.length;
+                countBadge.classList.remove('hidden');
+
+                container.innerHTML = list.map(b => `
+                    <div class="p-4 bg-slate-950 border border-slate-800 rounded-xl flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                        <div>
+                            <div class="flex items-center space-x-2">
+                                <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-red-500/20 text-red-400 border border-red-500/30">Sem ${b.semester}</span>
+                                <h4 class="font-bold text-white text-sm">${b.name}</h4>
+                            </div>
+                            <p class="text-xs text-slate-400 mt-1">Course Code: ${b.code} | Credits: ${b.credits} | Backlog Type: <span class="text-amber-400 font-semibold">${b.type || 'Theory'}</span></p>
+                        </div>
+                        <button onclick="switchStudentTab('forms')" class="px-3 py-1.5 bg-gtu-600 hover:bg-gtu-500 text-white rounded-xl text-xs font-semibold transition self-start sm:self-auto">
+                            Apply Remedial Exam
+                        </button>
+                    </div>
+                `).join('');
+            } else {
+                badge.innerText = "0 Backlogs (Clear Record)";
+                badge.className = "px-3 py-1 rounded-full text-xs font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30";
+                countBadge.classList.add('hidden');
+                container.innerHTML = `
+                    <div class="p-6 text-center bg-slate-950 rounded-xl border border-slate-800 text-slate-400 text-xs">
+                        <i class="fas fa-circle-check text-emerald-400 text-2xl mb-2"></i>
+                        <p class="font-semibold text-white">No Active Backlogs Recorded</p>
+                        <p class="text-slate-500 text-[11px] mt-0.5">You have cleared all previous semester courses.</p>
+                    </div>
+                `;
+            }
+        }
+
+        function renderStudentCalculator(student) {
+            const list = document.getElementById('st-calc-subjects-list');
+            list.innerHTML = student.subjects.map((s, idx) => `
+                <div class="p-4 bg-slate-950 border border-slate-800 rounded-xl flex flex-col md:flex-row md:items-center justify-between gap-4">
+                    <div>
+                        <h4 class="font-bold text-white text-sm">${s.name}</h4>
+                        <p class="text-xs text-slate-400">Code: ${s.code} | Credits: ${s.credits}</p>
+                    </div>
+                    <div class="flex flex-wrap items-center gap-3">
+                        <div class="bg-slate-900 px-3 py-1.5 rounded-lg border border-slate-800 text-xs">
+                            <span class="text-slate-400 block text-[10px]">Mid-Sem Marks</span>
+                            <span class="font-bold font-mono-num text-white">${s.midSem}/30</span>
+                        </div>
+                        <div class="bg-slate-900 px-3 py-1.5 rounded-lg border border-slate-800 text-xs">
+                            <span class="text-slate-400 block text-[10px]">Internal Marks</span>
+                            <span class="font-bold font-mono-num text-white">${s.internal}/20</span>
+                        </div>
+                        <div class="bg-gtu-950 border border-gtu-500/30 px-3.5 py-1.5 rounded-lg text-xs">
+                            <span class="text-gtu-300 block text-[10px]">Target ESE (70 Marks)</span>
+                            <input type="number" min="0" max="70" value="${s.targetEse}" onchange="updateTargetEse(${idx}, this.value)" class="w-14 bg-slate-900 border border-slate-700 rounded px-1.5 py-0.5 text-xs text-amber-400 font-mono-num font-bold">
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+
+            document.getElementById('st-calc-projected-spi').innerText = calculateSPI(student.subjects);
+        }
+
+        function updateTargetEse(subIdx, value) {
+            const student = studentsData.find(s => s.enrollment === currentStudentEnrollment);
+            if(student && student.subjects[subIdx]) {
+                student.subjects[subIdx].targetEse = parseInt(value) || 0;
+                document.getElementById('st-calc-projected-spi').innerText = calculateSPI(student.subjects);
+            }
+        }
+
+        function renderStudentForms(student) {
+            document.getElementById('st-reg-deadline').innerText = formConfig.regularDeadline;
+            document.getElementById('st-reass-deadline').innerText = formConfig.reassDeadline;
+
+            const checkboxes = document.getElementById('st-reg-subjects-checkboxes');
+            checkboxes.innerHTML = student.subjects.map((s, idx) => `
+                <label class="flex items-center space-x-2 text-xs text-slate-200 cursor-pointer">
+                    <input type="checkbox" checked onchange="calculateRegularExamFee()" class="st-reg-sub-check rounded bg-slate-900 border-slate-700 text-gtu-600 focus:ring-0">
+                    <span>${s.name} (${s.code})</span>
+                </label>
+            `).join('');
+
+            calculateRegularExamFee();
+
+            const reassSelect = document.getElementById('st-reass-subject-select');
+            reassSelect.innerHTML = student.subjects.map(s => `
+                <option value="${s.code}">${s.name} (${s.code})</option>
+            `).join('');
+
+            calculateReassessmentFee();
+
+            // Check submitted status
+            const regSubmitted = submittedForms.find(f => f.enrollment === student.enrollment && f.type === 'regular');
+            if(regSubmitted) {
+                document.getElementById('st-reg-submitted-banner').classList.remove('hidden');
+            }
+
+            const reassSubmitted = submittedForms.find(f => f.enrollment === student.enrollment && f.type === 'reassessment');
+            if(reassSubmitted) {
+                document.getElementById('st-reass-submitted-banner').classList.remove('hidden');
+            }
+        }
+
+        function calculateRegularExamFee() {
+            const checkedCount = document.querySelectorAll('.st-reg-sub-check:checked').length;
+            const total = formConfig.regularFee + (checkedCount * 100);
+            document.getElementById('st-reg-fee-total').innerText = `₹${total}`;
+        }
+
+        function calculateReassessmentFee() {
+            document.getElementById('st-reass-fee-total').innerText = `₹${formConfig.reassFee}`;
+        }
+
+        function submitRegularExamForm(e) {
+            e.preventDefault();
+            if(!formConfig.regularOpen) {
+                Swal.fire({ title: 'Forms Closed', text: 'Regular Exam Form portal is currently closed.', icon: 'error', background: '#0f172a', color: '#fff' });
+                return;
+            }
+
+            const student = studentsData.find(s => s.enrollment === currentStudentEnrollment);
+            const feeText = document.getElementById('st-reg-fee-total').innerText.replace('₹', '');
+
+            submittedForms.push({
+                enrollment: student.enrollment,
+                type: 'regular',
+                details: `Sem ${student.semester} Regular Exam Application`,
+                amount: parseInt(feeText),
+                date: new Date().toISOString().split('T')[0],
+                status: 'Approved'
+            });
+
+            saveState();
+            document.getElementById('st-reg-submitted-banner').classList.remove('hidden');
+            Swal.fire({ title: 'Form Submitted!', text: 'Regular Exam form successfully registered.', icon: 'success', background: '#0f172a', color: '#fff' });
+        }
+
+        function submitReassessmentForm(e) {
+            e.preventDefault();
+            if(!formConfig.reassOpen) {
+                Swal.fire({ title: 'Forms Closed', text: 'Re-assessment portal is currently closed.', icon: 'error', background: '#0f172a', color: '#fff' });
+                return;
+            }
+
+            const student = studentsData.find(s => s.enrollment === currentStudentEnrollment);
+            const subCode = document.getElementById('st-reass-subject-select').value;
+            const subType = document.getElementById('st-reass-type-select').value;
+            const reason = document.getElementById('st-reass-reason').value.trim();
+
+            submittedForms.push({
+                enrollment: student.enrollment,
+                type: 'reassessment',
+                details: `${subType.toUpperCase()} for subject code ${subCode}. Reason: ${reason || 'Review'}`,
+                amount: formConfig.reassFee,
+                date: new Date().toISOString().split('T')[0],
+                status: 'Pending'
+            });
+
+            saveState();
+            document.getElementById('st-reass-submitted-banner').classList.remove('hidden');
+            Swal.fire({ title: 'Application Registered', text: 'Re-assessment request submitted to department.', icon: 'success', background: '#0f172a', color: '#fff' });
+        }
+
+        function printExamFormReceipt(type) {
+            const student = studentsData.find(s => s.enrollment === currentStudentEnrollment);
+            Swal.fire({
+                title: 'Official GTU Receipt Generated',
+                html: `
+                    <div class="text-left text-xs text-slate-300 space-y-2 font-mono-num p-3 bg-slate-950 rounded-xl border border-slate-800">
+                        <p><strong>GTU RECEIPT NO:</strong> GTU-${Date.now().toString().slice(-6)}</p>
+                        <p><strong>Student:</strong> ${student.name}</p>
+                        <p><strong>Enrollment:</strong> ${student.enrollment}</p>
+                        <p><strong>Form Type:</strong> ${type.toUpperCase()}</p>
+                        <p><strong>Status:</strong> REGISTERED / PAID</p>
+                    </div>
+                `,
+                icon: 'info',
+                background: '#0f172a',
+                color: '#fff'
+            });
+        }
+
+        function renderStudentNotifications(student) {
+            const container = document.getElementById('st-notifications-container');
+            const countBadge = document.getElementById('st-inbox-badge-count');
+
+            const myNotifs = notificationsData.filter(n => n.target === student.enrollment || n.target === 'ALL');
+            const unreadCount = myNotifs.filter(n => !n.read).length;
+
+            if(unreadCount > 0) {
+                countBadge.innerText = unreadCount;
+                countBadge.classList.remove('hidden');
+            } else {
+                countBadge.classList.add('hidden');
+            }
+
+            if(myNotifs.length === 0) {
+                container.innerHTML = `<p class="text-xs text-slate-500 py-4 text-center">No notifications in your inbox.</p>`;
+                return;
+            }
+
+            container.innerHTML = myNotifs.map(n => `
+                <div class="p-4 rounded-xl border ${n.read ? 'bg-slate-950 border-slate-800 text-slate-400' : 'bg-slate-900 border-gtu-500/40 text-slate-100'} flex items-start justify-between gap-3">
+                    <div class="space-y-1">
+                        <div class="flex items-center space-x-2">
+                            <span class="px-2 py-0.5 rounded-full text-[10px] font-bold ${n.type === 'ATTENDANCE_WARNING' || n.type === 'MARKS_WARNING' ? 'bg-red-500/20 text-red-400' : 'bg-gtu-600/20 text-gtu-400'}">${n.type}</span>
+                            <h4 class="font-bold text-xs text-white">${n.title}</h4>
+                        </div>
+                        <p class="text-xs leading-relaxed">${n.message}</p>
+                        <span class="text-[10px] text-slate-500 block">${n.date}</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function markAllNotificationsRead() {
+            const student = studentsData.find(s => s.enrollment === currentStudentEnrollment);
+            notificationsData.forEach(n => {
+                if(n.target === student.enrollment || n.target === 'ALL') n.read = true;
+            });
+            saveState();
+            renderStudentNotifications(student);
+        }
+
+        // ================= FACULTY BACK-END LOGIC =================
+        function loadFacultyPortal() {
+            document.getElementById('guest-landing-view').classList.add('hidden');
+            document.getElementById('student-portal-view').classList.add('hidden');
+            document.getElementById('faculty-backend-view').classList.remove('hidden');
+
+            document.getElementById('header-role-badge').innerText = 'Faculty Admin Console';
+            document.getElementById('header-role-badge').className = 'px-2 py-0.5 text-[10px] font-semibold rounded-full bg-amber-500/20 text-amber-400 border border-amber-500/30';
+
+            document.getElementById('header-user-info').classList.remove('hidden');
+            document.getElementById('header-user-name').innerText = 'GTU Department Admin';
+            document.getElementById('header-user-enroll').innerText = 'Faculty Passkey Auth';
+            document.getElementById('auth-btn-text').innerText = 'Lock Console';
+            document.getElementById('auth-action-btn').onclick = lockFacultyConsole;
+
+            renderFacultyRoster();
+            renderFacultyFormsLog();
+        }
+
+        function lockFacultyConsole() {
+            showLandingView();
+            Swal.fire({ title: 'Console Locked', icon: 'info', timer: 1200, showConfirmButton: false, background: '#0f172a', color: '#fff' });
+        }
+
+        function switchFacultyTab(tab) {
+            ['roster', 'forms', 'notifications'].forEach(t => {
+                document.getElementById(`fac-tab-${t}`).classList.add('hidden');
+                document.getElementById(`fac-tab-btn-${t}`).className = "fac-tab-btn px-4 py-2 rounded-xl text-xs font-semibold transition text-slate-400 hover:bg-slate-800";
+            });
+
+            document.getElementById(`fac-tab-${tab}`).classList.remove('hidden');
+            document.getElementById(`fac-tab-btn-${tab}`).className = "fac-tab-btn active px-4 py-2 rounded-xl text-xs font-semibold transition bg-amber-600 text-white";
+        }
+
+        function renderFacultyRoster() {
+            const tbody = document.getElementById('fac-roster-tbody');
+            const searchVal = (document.getElementById('fac-search-input').value || '').toLowerCase();
+
+            const filtered = studentsData.filter(s => s.name.toLowerCase().includes(searchVal) || s.enrollment.includes(searchVal));
+
+            tbody.innerHTML = filtered.map(s => {
+                const spi = calculateSPI(s.subjects);
+                const backlogsCount = (s.backlogsList || []).length;
+
+                let riskBadge = `<span class="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-500/20 text-emerald-400">LOW</span>`;
+                if(s.attendance < 75 || parseFloat(spi) < 5.5 || backlogsCount >= 2) {
+                    riskBadge = `<span class="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-red-500/20 text-red-400">CRITICAL</span>`;
+                } else if(s.attendance < 80 || parseFloat(spi) < 6.5 || backlogsCount > 0) {
+                    riskBadge = `<span class="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-amber-500/20 text-amber-400">MODERATE</span>`;
+                }
+
+                return `
+                    <tr class="hover:bg-slate-800/40 transition">
+                        <td class="px-3 py-3 font-mono-num font-semibold text-white">${s.enrollment}</td>
+                        <td class="px-3 py-3 font-medium text-slate-100">${s.name}</td>
+                        <td class="px-3 py-3 text-slate-400">${s.branch} (Sem ${s.semester})</td>
+                        <td class="px-3 py-3 text-center font-mono-num ${s.attendance < 75 ? 'text-red-400 font-bold' : 'text-slate-200'}">${s.attendance}%</td>
+                        <td class="px-3 py-3 text-center font-mono-num font-bold ${backlogsCount > 0 ? 'text-amber-400' : 'text-slate-400'}">${backlogsCount}</td>
+                        <td class="px-3 py-3 text-center font-mono-num font-bold text-gtu-400">${spi}</td>
+                        <td class="px-3 py-3 text-center">${riskBadge}</td>
+                        <td class="px-3 py-3 text-right">
+                            <button onclick="openEditMarksModal('${s.enrollment}')" class="px-2.5 py-1 bg-slate-800 hover:bg-slate-700 text-amber-400 rounded-lg text-[11px] font-semibold border border-slate-700">
+                                <i class="fas fa-pen mr-1"></i>Edit Marks & Backlogs
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function filterFacultyRoster() {
+            renderFacultyRoster();
+        }
+
+        function openEditMarksModal(enrollment) {
+            const student = studentsData.find(s => s.enrollment === enrollment);
+            if(!student) return;
+
+            document.getElementById('fac-edit-student-id').value = student.enrollment;
+            document.getElementById('fac-edit-student-title').innerText = `${student.name} (${student.enrollment})`;
+            document.getElementById('fac-edit-att').value = student.attendance;
+
+            renderFacultyModalBacklogsList(student.backlogsList || []);
+
+            const inputsDiv = document.getElementById('fac-edit-subjects-inputs');
+            inputsDiv.innerHTML = student.subjects.map((sub, idx) => `
+                <div class="flex items-center justify-between text-xs bg-slate-950 p-2.5 rounded-xl border border-slate-800">
+                    <span class="text-slate-300 font-medium">${sub.name}</span>
+                    <div class="flex items-center space-x-2">
+                        <span class="text-[10px] text-slate-500">Mid-Sem:</span>
+                        <input type="number" min="0" max="30" value="${sub.midSem}" data-sub-idx="${idx}" class="fac-mid-input w-16 bg-slate-900 border border-slate-700 rounded-lg px-2 py-1 text-xs text-white font-mono-num">
+                    </div>
+                </div>
+            `).join('');
+
+            document.getElementById('fac-edit-marks-modal').classList.remove('hidden');
+        }
+
+        function closeEditMarksModal() {
+            document.getElementById('fac-edit-marks-modal').classList.add('hidden');
+        }
+
+        function renderFacultyModalBacklogsList(list) {
+            const container = document.getElementById('fac-edit-backlogs-list');
+            if(list.length === 0) {
+                container.innerHTML = `<p class="text-[11px] text-slate-500 py-1">No active backlogs recorded.</p>`;
+                return;
+            }
+
+            container.innerHTML = list.map((b, idx) => `
+                <div class="flex items-center justify-between text-xs bg-slate-950 p-2 rounded-xl border border-slate-800">
+                    <div>
+                        <span class="font-semibold text-white block">${b.name} (${b.code})</span>
+                        <span class="text-[10px] text-slate-400">Sem ${b.semester} • ${b.credits} Credits • ${b.type || 'Theory'}</span>
+                    </div>
+                    <button type="button" onclick="removeBacklogFromModal(${idx})" class="text-red-400 hover:text-red-300 text-xs px-2 py-1">
+                        <i class="fas fa-trash"></i> Resolve
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        function addNewBacklogRowToModal() {
+            const enroll = document.getElementById('fac-edit-student-id').value;
+            const student = studentsData.find(s => s.enrollment === enroll);
+            if(!student) return;
+
+            if(!student.backlogsList) student.backlogsList = [];
+
+            student.backlogsList.push({
+                code: "315070" + Math.floor(Math.random() * 9 + 1),
+                name: "Backlog Subject #" + (student.backlogsList.length + 1),
+                semester: 5,
+                credits: 4,
+                type: "Theory"
+            });
+
+            renderFacultyModalBacklogsList(student.backlogsList);
+        }
+
+        function removeBacklogFromModal(idx) {
+            const enroll = document.getElementById('fac-edit-student-id').value;
+            const student = studentsData.find(s => s.enrollment === enroll);
+            if(student && student.backlogsList) {
+                student.backlogsList.splice(idx, 1);
+                renderFacultyModalBacklogsList(student.backlogsList);
+            }
+        }
+
+        function saveFacultyMarksEdit(e) {
+            e.preventDefault();
+            const enroll = document.getElementById('fac-edit-student-id').value;
+            const student = studentsData.find(s => s.enrollment === enroll);
+
+            if(student) {
+                student.attendance = parseInt(document.getElementById('fac-edit-att').value) || 0;
+
+                const inputs = document.querySelectorAll('.fac-mid-input');
+                inputs.forEach(input => {
+                    const idx = parseInt(input.getAttribute('data-sub-idx'));
+                    student.subjects[idx].midSem = parseInt(input.value) || 0;
+                });
+
+                saveState();
+                closeEditMarksModal();
+                renderFacultyRoster();
+                Swal.fire({ title: 'Saved!', text: 'Student record updated.', icon: 'success', background: '#0f172a', color: '#fff' });
+            }
+        }
+
+        function openAddStudentModal() {
+            document.getElementById('fac-add-student-modal').classList.remove('hidden');
+        }
+
+        function closeAddStudentModal() {
+            document.getElementById('fac-add-student-modal').classList.add('hidden');
+        }
+
+        function saveNewStudent(e) {
+            e.preventDefault();
+            const enroll = document.getElementById('add-st-enroll').value.trim();
+            const name = document.getElementById('add-st-name').value.trim();
+            const pass = document.getElementById('add-st-pass').value.trim();
+            const branch = document.getElementById('add-st-branch').value.trim();
+            const sem = parseInt(document.getElementById('add-st-sem').value) || 6;
+            const att = parseInt(document.getElementById('add-st-att').value) || 85;
+
+            if(studentsData.some(s => s.enrollment === enroll)) {
+                Swal.fire({ title: 'Duplicate Record', text: 'Enrollment number already exists.', icon: 'error', background: '#0f172a', color: '#fff' });
+                return;
+            }
+
+            studentsData.push({
+                enrollment: enroll,
+                password: pass,
+                name: name,
+                branch: branch,
+                semester: sem,
+                attendance: att,
+                backlogsList: [],
+                subjects: [
+                    { code: "3160704", name: "Software Engineering", credits: 4, midSem: 22, internal: 20, targetEse: 35 },
+                    { code: "3160707", name: "Advanced Java Technology", credits: 5, midSem: 20, internal: 19, targetEse: 35 },
+                    { code: "3160712", name: "Microprocessor & Interfacing", credits: 4, midSem: 21, internal: 18, targetEse: 35 },
+                    { code: "3160713", name: "Web Data Management", credits: 4, midSem: 23, internal: 21, targetEse: 35 },
+                    { code: "3160714", name: "Data Mining & BI", credits: 3, midSem: 20, internal: 19, targetEse: 35 }
+                ]
+            });
+
+            saveState();
+            closeAddStudentModal();
+            renderFacultyRoster();
+            Swal.fire({ title: 'Student Added!', text: 'New student account created.', icon: 'success', background: '#0f172a', color: '#fff' });
+        }
+
+        // Form Config Controls
+        function toggleFormConfig(type) {
+            if(type === 'regular') formConfig.regularOpen = document.getElementById('fac-reg-toggle-open').checked;
+            if(type === 'reassessment') formConfig.reassOpen = document.getElementById('fac-reass-toggle-open').checked;
+            saveState();
+        }
+
+        function updateFormDeadline(type, val) {
+            if(type === 'regular') formConfig.regularDeadline = val;
+            if(type === 'reassessment') formConfig.reassDeadline = val;
+            saveState();
+        }
+
+        function updateFormFee(type, val) {
+            if(type === 'regular') formConfig.regularFee = parseInt(val) || 0;
+            if(type === 'reassessment') formConfig.reassFee = parseInt(val) || 0;
+            saveState();
+        }
+
+        function renderFacultyFormsLog() {
+            const tbody = document.getElementById('fac-forms-tbody');
+            if(submittedForms.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="7" class="text-center py-4 text-slate-500">No form applications submitted yet.</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = submittedForms.map((f, idx) => `
+                <tr class="hover:bg-slate-800/40 transition">
+                    <td class="px-3 py-2.5 text-slate-400">${f.date}</td>
+                    <td class="px-3 py-2.5 font-mono-num font-semibold text-white">${f.enrollment}</td>
+                    <td class="px-3 py-2.5 uppercase font-semibold text-gtu-400">${f.type}</td>
+                    <td class="px-3 py-2.5 text-slate-300">${f.details}</td>
+                    <td class="px-3 py-2.5 text-center font-mono-num text-amber-400">₹${f.amount}</td>
+                    <td class="px-3 py-2.5 text-center font-semibold ${f.status === 'Approved' ? 'text-emerald-400' : 'text-amber-400'}">${f.status}</td>
+                    <td class="px-3 py-2.5 text-right">
+                        ${f.status === 'Pending' ? `
+                            <button onclick="approveStudentForm(${idx})" class="px-2 py-1 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-[10px] font-semibold">
+                                Approve
+                            </button>
+                        ` : '<span class="text-slate-500 text-[10px]">Processed</span>'}
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function approveStudentForm(idx) {
+            if(submittedForms[idx]) {
+                submittedForms[idx].status = 'Approved';
+                saveState();
+                renderFacultyFormsLog();
+                Swal.fire({ title: 'Approved', text: 'Application approved.', icon: 'success', timer: 1200, showConfirmButton: false, background: '#0f172a', color: '#fff' });
+            }
+        }
+
+        function dispatchFacultyNotification(e) {
+            e.preventDefault();
+            const target = document.getElementById('fac-dispatch-target').value;
+            const type = document.getElementById('fac-dispatch-type').value;
+            const title = document.getElementById('fac-dispatch-title').value.trim();
+            const msg = document.getElementById('fac-dispatch-msg').value.trim();
+
+            notificationsData.push({
+                id: Date.now(),
+                target: target,
+                title: title,
+                message: msg,
+                date: new Date().toISOString().split('T')[0],
+                type: type,
+                read: false
+            });
+
+            saveState();
+            Swal.fire({ title: 'Notification Dispatched!', text: `Sent to target: ${target}`, icon: 'success', background: '#0f172a', color: '#fff' });
+        }
+
+        function runAutoRiskScanAndNotify() {
+            const logDiv = document.getElementById('fac-scan-log');
+            logDiv.innerHTML = `<p class="text-amber-400">// Initiating automated GTU academic risk scan...</p>`;
+
+            let warningsCount = 0;
+
+            studentsData.forEach(s => {
+                const spi = calculateSPI(s.subjects);
+                const backlogsCount = (s.backlogsList || []).length;
+
+                if(s.attendance < 75) {
+                    warningsCount++;
+                    notificationsData.push({
+                        id: Date.now() + Math.random(),
+                        target: s.enrollment,
+                        title: "Automated Attendance Warning",
+                        message: `Your current attendance is ${s.attendance}%. Below GTU 75% requirement.`,
+                        date: new Date().toISOString().split('T')[0],
+                        type: "ATTENDANCE_WARNING",
+                        read: false
+                    });
+                    logDiv.innerHTML += `<p class="text-red-400">[Flagged] ${s.enrollment} (${s.name}) - Attendance ${s.attendance}% &lt; 75%</p>`;
+                }
+
+                s.subjects.forEach(sub => {
+                    if(sub.midSem < 12) {
+                        warningsCount++;
+                        notificationsData.push({
+                            id: Date.now() + Math.random(),
+                            target: s.enrollment,
+                            title: `Low Mid-Sem Alert: ${sub.name}`,
+                            message: `Scored ${sub.midSem}/30 in ${sub.name}. Passing threshold is 12/30.`,
+                            date: new Date().toISOString().split('T')[0],
+                            type: "MARKS_WARNING",
+                            read: false
+                        });
+                        logDiv.innerHTML += `<p class="text-amber-300">[Flagged] ${s.enrollment} - ${sub.name} Mid Score (${sub.midSem}/30) &lt; 12</p>`;
+                    }
+                });
+            });
+
+            saveState();
+            logDiv.innerHTML += `<p class="text-emerald-400 font-bold mt-2">// Auto-Scan completed. Dispatched ${warningsCount} warning alerts.</p>`;
+        }
+    </script>
+</body>
+</html>
